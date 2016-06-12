@@ -28,7 +28,7 @@ public class MyCLIView extends CommonView {
 		//Displaying a welcome message
 		displayMessage("Welcome to the Maze3D CLI!\nType help to view available commands to use.\n\n");
 		
-		threadPool.execute(new Runnable() {
+		Thread thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -52,6 +52,7 @@ public class MyCLIView extends CommonView {
 				}						
 			}
 		});
+		thread.start();
 		
 	}
 

@@ -3,9 +3,6 @@ package view;
 import java.io.BufferedReader;
 import java.io.Writer;
 import java.util.Observable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import presenter.Presenter;
 
@@ -23,8 +20,6 @@ public abstract class CommonView extends Observable implements View {
 	public abstract void start();
 	public abstract void displayMessage(String message);
 	public abstract void displayMessage(String[] messages);
-
-	protected ExecutorService threadPool;
 	
 	/**
 	 * CTOR to initiate what every view has to.
@@ -34,7 +29,6 @@ public abstract class CommonView extends Observable implements View {
 	public CommonView(BufferedReader in, Writer out) {
 		this.in = in;
 		this.out = out;
-		threadPool = Executors.newCachedThreadPool();
 	}
 
 	@Override
@@ -45,20 +39,5 @@ public abstract class CommonView extends Observable implements View {
 	@Override
 	public void exit() {
 		displayMessage("Exiting...\n");
-		try {
-			threadPool.shutdown();
-			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)){
-				threadPool.shutdownNow();
-				displayMessage(this.getClass().getName() + "'s threads forced to be terminated.\n");
-			}
-			else
-			{
-				displayMessage(this.getClass().getName() + "'s threads terminated successfully.\n");
-				setChanged();
-			}
-		} catch (InterruptedException e){
-			displayMessage("Interruption occurred during threads termination.\n");
-			e.printStackTrace();
-		}
 	}
 }
