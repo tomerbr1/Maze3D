@@ -26,13 +26,7 @@ public class SolveMaze implements Command {
 			String name = args[0];
 			String algorithm = args[1];
 
-			if (model.getMaze(name) != null)
-				model.solveMaze(name, algorithm);
-			else
-			{
-				view.displayMessage("(Presenter\\DisplayMaze Cmd) Maze " + name + " Maze not found.\n");
-				return;
-			}
+			model.solveMaze(name, algorithm);
 		}
 		else
 			view.displayMessage("(Presenter\\Solve Maze Cmd) Missing Parameters.\n");		

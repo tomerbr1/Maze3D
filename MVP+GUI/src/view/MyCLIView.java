@@ -5,9 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import algorithms.search.Solution;
-import maze.generators.Maze3d;
-
 /**
  * Defines the MyCLIView view, a command line based interface.
  * @author Tomer
@@ -43,7 +40,7 @@ public class MyCLIView extends CommonView {
 						line = in.readLine();
 						setChanged();
 						notifyObservers(line);
-						if (line.contains("generate_maze_3d")){
+						if (line.contains("generate_maze_3d") || line.contains("solve ")){
 							Thread.sleep(50);
 						}
 					}
@@ -111,46 +108,8 @@ public class MyCLIView extends CommonView {
 	}
 
 	@Override
-	public void displayMaze(Maze3d maze) {
-		try {
-			out.write(maze.toString());
-			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
-	public void displayMaze2d(int[][] Maze2d) {
-		StringBuilder sb = new StringBuilder();
-
-		for (int[] i : Maze2d){
-			for (int j : i){
-				sb.append(j);
-				sb.append(" ");
-			}
-			sb.append("\n");
-		}
-		try {
-			out.write(sb.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void displaySolution(Solution solution) {
-		try {
-			out.write(solution.toString());
-			out.flush();
-		} catch (Exception e) {
-			displayMessage("(MyCLIView\\displaySolution) General error.\n");
-			e.printStackTrace();
-		}
-	}
-
-	@Override
 	public void displayHelp() {
+
 		displayMessage("***********************\n");
 		displayMessage("* Maze3d CLI Commands *\n");
 		displayMessage("***********************\n");
@@ -164,8 +123,9 @@ public class MyCLIView extends CommonView {
 		displayMessage("8) cross_section_x <cols_index> <maze_name> - Display a Crossed 2d maze for the given X index for a Maze3d instance.\n");
 		displayMessage("9) cross_section_y <rows_index> <maze_name> - Same for Y index.\n");
 		displayMessage("10) cross_section_z <depth_index> <maze_name> - Same for Z index.\n");
+		displayMessage("11) display_solution <maze_name> - Display the solution for a 3D Maze.\n");
 		//displayMessage("\"save_zip_map\" <file_name>\n");
 		//displayMessage("\"load_zip_map\" <file_name>\n");
-		displayMessage("11) exit - Terminates the game.\n");	
+		displayMessage("12) exit - Terminates the game.\n");	
 	}
 }

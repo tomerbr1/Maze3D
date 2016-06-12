@@ -44,7 +44,7 @@ public abstract class CommonView extends Observable implements View {
 
 	@Override
 	public void exit() {
-		System.out.println("Exiting...\n");
+		displayMessage("Exiting...\n");
 		try {
 			threadPool.shutdown();
 			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)){

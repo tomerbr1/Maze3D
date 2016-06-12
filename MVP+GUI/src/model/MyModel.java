@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +37,145 @@ public class MyModel extends CommonModel implements Model {
 	}
 
 	@Override
+	public void displayCrossSectionByX(String index, String name) {
+		Maze3d maze = getMaze(name);
+
+		try {
+			maze2d = maze.getCrossSectionByX(Integer.parseInt(index));
+			setChanged();
+			notifyObservers(maze2dToString(maze2d));
+			return;
+		} catch (NumberFormatException e) {
+			setChanged();
+			notifyObservers("Invalid parameter.\n");
+			return;
+		} catch (IndexOutOfBoundsException e) {
+			setChanged();
+			notifyObservers("Index is out of bound\n");
+			return;
+		}		
+	}
+
+	@Override
+	public void displayCrossSectionByY(String index, String name) {
+		Maze3d maze = getMaze(name);
+
+		try {
+			maze2d = maze.getCrossSectionByY(Integer.parseInt(index));
+			setChanged();
+			notifyObservers(maze2dToString(maze2d));
+			return;
+		} catch (NumberFormatException e) {
+			setChanged();
+			notifyObservers("Invalid parameter.\n");
+			return;
+		} catch (IndexOutOfBoundsException e) {
+			setChanged();
+			notifyObservers("Index is out of bound\n");
+			return;
+		}	
+	}
+
+	@Override
+	public void displayCrossSectionByZ(String index, String name) {
+		Maze3d maze = getMaze(name);
+
+		try {
+			maze2d = maze.getCrossSectionByZ(Integer.parseInt(index));
+			setChanged();
+			notifyObservers(maze2dToString(maze2d));
+			return;
+		} catch (NumberFormatException e) {
+			setChanged();
+			notifyObservers("Invalid parameter.\n");
+			return;
+		} catch (IndexOutOfBoundsException e) {
+			setChanged();
+			notifyObservers("Index is out of bound\n");
+			return;
+		}
+	}
+
+	@Override
+	public void displayMaze(String name) {
+		if (mazes.containsKey(name)){
+			Maze3d maze = mazes.get(name);
+			setChanged();
+			notifyObservers(maze.toString());
+			return;
+		}
+		else {
+			setChanged();
+			notifyObservers("Maze " + name + " doesn't exists.\n");
+			return;
+		}
+
+	}
+
+	@Override
+	public void displaySolution(String name) {
+
+		if (!mazes.containsKey(name))
+		{
+			setChanged();
+			notifyObservers("(MyModel\\solveMaze) Maze " + name + " not found.\n");
+			return;
+		}
+		else
+		{
+			String mazeToStr = mazes.get(name).toString();
+
+			if (solutions.containsKey(mazeToStr)) {
+				Solution solution = solutions.get(mazeToStr);
+				setChanged();
+				notifyObservers(solution.toString());
+				return;
+			}
+			else if (!solutions.containsKey(mazeToStr)){
+				setChanged();
+				notifyObservers("Solution for " + name + " doesn't exists. Use solve command first.\n");
+			}
+		}
+	}
+
+	@Override
+	public void exit() {
+		if (!threadPool.isTerminated())
+		{
+			try {
+				threadPool.shutdown();
+				if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)){
+					threadPool.shutdownNow();
+					setChanged();
+					notifyObservers(this.getClass().getName() + "'s threads forced to be terminated.\n");
+				}
+				else
+				{
+					setChanged();
+					notifyObservers(this.getClass().getName() + "'s threads terminated successfully.\n");
+				}
+			} catch (InterruptedException e){
+				setChanged();
+				notifyObservers("Interruption occurred during threads termination.\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public Maze3d getMaze(String name){
+
+		if (mazes.containsKey(name))
+			return mazes.get(name);
+		else
+		{
+			setChanged();
+			notifyObservers("Maze " + name + " doesn't exists.\n");
+			return null;
+		}
+	}
+
+	@Override
 	public void generateMaze(String name, int rows, int cols, int depth) {
 
 		//Generate the Maze3d by a submitting a new value-returning (Callable) thread to the threadPool.
@@ -47,56 +185,11 @@ public class MyModel extends CommonModel implements Model {
 			public Maze3d call() throws Exception {
 				Maze3d maze = new MyMaze3dGenerator().generate(cols, rows, depth);
 				mazes.put(name, maze);
-				message = "Maze " + name + " is ready.\n";
 				setChanged();
-				notifyObservers("display_message");
+				notifyObservers("Maze " + name + " is ready.\n");
 				return null;
 			}
 		});
-	}
-
-	@Override
-	public void saveMaze(String name, String fileName) {
-
-		//Check if the maze already exists in the mazes map
-		if (!mazes.containsKey(name)) 
-		{
-			message = "The maze" + name + "does not exists\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		}
-		Maze3d maze = mazes.get(name);
-		try {
-			//Compress and save the given Maze3d.
-			OutputStream out = new MyCompressorOutputStream(new FileOutputStream(fileName));
-			int size = maze.toByteArray().length;
-			int count = 0;
-			while(size>255)
-			{
-				size = size-255;
-				count++;
-			}	
-			out.write(size);
-			out.write(count);
-			out.write(maze.toByteArray());
-			out.flush();
-			out.close();
-			message = "Maze " + name + " is saved succesfully to the file: " + fileName +  "\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (FileNotFoundException e) {
-			message = "File '" + fileName + "' Not Found\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (IOException e) {
-			message = "Input\\Output error.\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		}
 	}
 
 	@Override
@@ -105,9 +198,8 @@ public class MyModel extends CommonModel implements Model {
 		//Check if the given Maze3d name already exists and loaded.
 		if (mazes.containsKey(name))
 		{
-			message = "Maze " + name + " Already exist and loaded succesfully\n";
 			setChanged();
-			notifyObservers("display_message");
+			notifyObservers("Maze " + name + " Already exist and loaded succesfully\n");
 			return;
 		}
 		byte[] myarry = null;
@@ -126,22 +218,36 @@ public class MyModel extends CommonModel implements Model {
 			in.read(myarry);
 			in.close();	
 			mazes.put(name, new Maze3d(myarry));
-			message = "Maze " + name + " has been loaded succesfully!\n";
 			setChanged();
-			notifyObservers("display_message");
+			notifyObservers("Maze " + name + " has been loaded succesfully!\n");
 
 		}catch(FileNotFoundException e){
-			message = "File " + fileName + " Not Found.\n";
 			setChanged();
-			notifyObservers("display_message");
+			notifyObservers("File " + fileName + " Not Found.\n");
 			return;
 		} catch (IOException e) {
-			message = "Input\\Output Error.\n";
 			setChanged();
-			notifyObservers("display_message");
+			notifyObservers("Input\\Output Error.\n");
 			return;
 		}		
+	}
 
+	/**
+	 * an inner method, used to convert a crossed-sectioned 2d maze into string.
+	 * @param Maze2d
+	 * @return
+	 */
+	public String maze2dToString(int[][] Maze2d) {
+		StringBuilder sb = new StringBuilder();
+
+		for (int[] i : Maze2d){
+			for (int j : i){
+				sb.append(j);
+				sb.append(" ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 
 	@Override
@@ -150,15 +256,53 @@ public class MyModel extends CommonModel implements Model {
 		if (mazes.containsKey(name))
 		{
 			Maze3d maze = mazes.get(name);
-			message = "The size of " + name + " maze in the memory is: " + maze.getCols()*maze.getRows()*maze.getDepth() + ".\n"; 
 			setChanged();
-			notifyObservers("display_message");
+			notifyObservers("The size of " + name + " maze in the memory is: " + maze.getCols()*maze.getRows()*maze.getDepth() + ".\n");
 		}
 		else
 		{
-			message = "(MyModel\\mazeSize) Maze " + name + " doesn't exists.\n";	
 			setChanged();
-			notifyObservers("display_message");
+			notifyObservers("(MyModel\\mazeSize) Maze " + name + " doesn't exists.\n");
+			return;
+		}
+	}
+
+	@Override
+	public void saveMaze(String name, String fileName) {
+
+		//Check if the maze already exists in the mazes map
+		if (!mazes.containsKey(name)) 
+		{
+			setChanged();
+			notifyObservers("The maze" + name + "does not exists\n");
+			return;
+		}
+		Maze3d maze = mazes.get(name);
+		try {
+			//Compress and save the given Maze3d.
+			OutputStream out = new MyCompressorOutputStream(new FileOutputStream(fileName));
+			int size = maze.toByteArray().length;
+			int count = 0;
+			while(size>255)
+			{
+				size = size-255;
+				count++;
+			}	
+			out.write(size);
+			out.write(count);
+			out.write(maze.toByteArray());
+			out.flush();
+			out.close();
+			setChanged();
+			notifyObservers("Maze " + name + " is saved succesfully to the file: " + fileName +  "\n");
+			return;
+		} catch (FileNotFoundException e) {
+			setChanged();
+			notifyObservers("File '" + fileName + "' Not Found\n");
+			return;
+		} catch (IOException e) {
+			setChanged();
+			notifyObservers("Input\\Output error.\n");
 			return;
 		}
 	}
@@ -166,8 +310,21 @@ public class MyModel extends CommonModel implements Model {
 	@Override
 	public void solveMaze(String name, String algorithm) {
 
-		//Check if the given Maze3d name exists in the mazes map.
-		if (mazes.containsKey(name))
+		if (!mazes.containsKey(name)){
+			setChanged();
+			notifyObservers("(MyModel\\solveMaze) Maze " + name + " not found.\n");
+			return;
+		}
+
+		String mazeToStr = mazes.get(name).toString();
+		//check if the given Maze3d already solved, to optimize caching and calculating time
+
+		if (solutions.containsKey(mazeToStr)) {
+			setChanged();
+			notifyObservers(name + " maze is already solved.\n");
+			return;
+		}
+		else if (!solutions.containsKey(mazeToStr))
 		{
 			//Solve the Maze3d by a new thread.
 			threadPool.submit(new Callable<Solution>() {
@@ -186,166 +343,26 @@ public class MyModel extends CommonModel implements Model {
 						case "bfs":
 							BestFirstSearch bfs = new BestFirstSearch();
 							solution = bfs.search(adapter);
-							solutions.put(name, solution);
+							solutions.put(maze.toString(), solution);
 							setChanged();
-							notifyObservers("display_solution");
+							notifyObservers(name + " maze is solved by " + algorithm + " successfully!\n");
 							break;
 						case "dfs":
 							DFS dfs = new DFS();
 							solution = dfs.search(adapter);
-							solutions.put(name, solution);
+							solutions.put(maze.toString(), solution);
 							setChanged();
-							notifyObservers("display_solution");
+							notifyObservers(name + " maze is solved by " + algorithm + " successfully!\n");
 							break;
 						default:
-							message = "The algorithm " + algorithm + " doesn't exists.\nPlease choose between \"bfs\" and \"dfs\".\n";
 							setChanged();
-							notifyObservers("display_message");
+							notifyObservers("The algorithm " + algorithm + " doesn't exists.\nPlease choose between \"bfs\" and \"dfs\".\n");
 							break;
 						}
 					}
 					return null;
 				}
 			});
-		}
-		else
-		{
-			message = "(MyModel\\solveMaze) Maze " + name + " not found.\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		}
-	}
-	@Override
-	public void exit() {
-		try {
-			threadPool.shutdown();
-			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)){
-				threadPool.shutdownNow();
-				message = this.getClass().getName() + "'s threads forced to be terminated.\n";
-				setChanged();
-				notifyObservers("display_message");
-			}
-			else
-			{
-				message = this.getClass().getName() + "'s threads terminated successfully.\n";
-				setChanged();
-				notifyObservers("display_message");
-			}
-		} catch (InterruptedException e){
-			message = "Interruption occurred during threads termination.\n";
-			setChanged();
-			notifyObservers("display_message");
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public Maze3d getMaze(String name){
-
-		if (mazes.containsKey(name))
-			return mazes.get(name);
-		else
-		{
-			message = "Maze " + name + " doesn't exists.\n";
-			setChanged();
-			notifyObservers("display_message");
-			return null;
-		}
-	}
-
-	@Override
-	public int[][] getMaze2d(){
-		return maze2d;
-	}
-
-	@Override
-	public void setMaze2d(int[][] maze2d){
-		this.maze2d = maze2d;
-	}
-
-	@Override
-	public Solution getSolution(String solution){
-		return solutions.get(solution);
-	}
-
-	@Override
-	public HashMap<String, Solution> getSolutions() {
-		return solutions;
-	}
-
-	@Override
-	public void generateCrossSectionByX(String index, String name) {
-		Maze3d maze = getMaze(name);
-
-		try {
-			maze2d = maze.getCrossSectionByX(Integer.parseInt(index));
-			setChanged();
-			notifyObservers("display_maze2d");
-			message = "Cross Section by X\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (NumberFormatException e) {
-			message = "Invalid parameter.\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (IndexOutOfBoundsException e) {
-			message = "Index is out of bound\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		}		
-	}
-
-	@Override
-	public void generateCrossSectionByY(String index, String name) {
-		Maze3d maze = getMaze(name);
-
-		try {
-			maze2d = maze.getCrossSectionByY(Integer.parseInt(index));
-			setChanged();
-			notifyObservers("display_maze2d");
-			message = "Cross Section by Y\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (NumberFormatException e) {
-			message = "Invalid parameter.\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (IndexOutOfBoundsException e) {
-			message = "Index is out of bound\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		}	
-	}
-
-	@Override
-	public void generateCrossSectionByZ(String index, String name) {
-		Maze3d maze = getMaze(name);
-
-		try {
-			maze2d = maze.getCrossSectionByZ(Integer.parseInt(index));
-			setChanged();
-			notifyObservers("display_maze2d");
-			message = "Cross Section by Z\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (NumberFormatException e) {
-			message = "Invalid parameter.\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
-		} catch (IndexOutOfBoundsException e) {
-			message = "Index is out of bound\n";
-			setChanged();
-			notifyObservers("display_message");
-			return;
 		}
 	}
 

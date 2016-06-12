@@ -31,12 +31,8 @@ public class DisplayCrossSectionByZ implements Command {
 		{
 			String index = args[0];
 			String name = args[1];
-			Maze3d maze = model.getMaze(name);
 
-			if (maze != null)
-				model.generateCrossSectionByZ(index, name);
-			else
-				view.displayMessage("(Presenter\\DisplayCrossSectionByZ Cmd) " + name + " Maze not found.\n");
+			model.displayCrossSectionByZ(index, name);
 		}
 	}
 }

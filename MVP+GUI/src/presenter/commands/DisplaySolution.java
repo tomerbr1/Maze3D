@@ -1,6 +1,5 @@
 package presenter.commands;
 
-import algorithms.search.Solution;
 import model.Model;
 import view.View;
 
@@ -22,17 +21,12 @@ public class DisplaySolution implements Command {
 	@Override
 	public void doCommand(String[] args) {
 
-		if (args == null)
-			view.displayMessage("(Presenter\\DisplaySolution Cmd) Missing Parameters.\n");
-		else
+		if (args != null)
 		{
 			String solutionName = args[0];
-			Solution solution = model.getSolution(solutionName);
-
-			if (solution != null)
-				view.displaySolution(solution);
-			else
-				view.displayMessage("(Presenter\\DisplaySolution Cmd) " + solutionName + " solution not found.\n");
+			model.displaySolution(solutionName);
 		}
+		else
+			view.displayMessage("(Presenter\\DisplaySolution Cmd) Missing Parameters.\n");
 	}
 }

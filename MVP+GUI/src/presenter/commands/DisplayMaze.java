@@ -1,6 +1,5 @@
 package presenter.commands;
 
-import maze.generators.Maze3d;
 import model.Model;
 import view.View;
 
@@ -27,12 +26,7 @@ public class DisplayMaze implements Command {
 		else
 		{
 			String name = args[0];
-			Maze3d maze = model.getMaze(name);
-
-			if (maze != null)
-				view.displayMaze(maze);
-			else
-				view.displayMessage("(Presenter\\DisplayMaze Cmd) Maze " + name + " Maze not found.\n");
+			model.displayMaze(name);
 		}
 	}
 }

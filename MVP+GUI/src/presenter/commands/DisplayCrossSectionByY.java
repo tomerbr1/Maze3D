@@ -1,6 +1,5 @@
 package presenter.commands;
 
-import maze.generators.Maze3d;
 import model.Model;
 import view.View;
 
@@ -31,12 +30,8 @@ public class DisplayCrossSectionByY implements Command {
 		{
 			String index = args[0];
 			String name = args[1];
-			Maze3d maze = model.getMaze(name);
 
-			if (maze != null)
-				model.generateCrossSectionByY(index, name);
-			else
-				view.displayMessage("(Presenter\\DisplayCrossSectionByY Cmd) " + name + " Maze not found.\n");
+			model.displayCrossSectionByY(index, name);
 		}
 	}
 }

@@ -1,8 +1,5 @@
 package model;
 
-import java.util.HashMap;
-
-import algorithms.search.Solution;
 import maze.generators.Maze3d;
 
 /**
@@ -14,12 +11,17 @@ import maze.generators.Maze3d;
 public interface Model {
 
 	/**
-	 * a Getter method used to let the Presenter get a String message from the model,
-	 * when it being notified as an Observer by a display_message string from an observable model.
-	 * @return a string message
+	 * Display a Maze3d to the output.
+	 * @param maze the Maze3d instance.
 	 */
-	String getMessage();
-
+	void displayMaze(String name);
+	
+	/**
+	 * Display the solution steps for a Maze3d instance.
+	 * @param name the solved 3D maze name.
+	 */
+	void displaySolution(String name);
+	
 	/**
 	 * Generate a new 3d Maze according to the given parameters.
 	 * @param name a string used to identify the maze in the mazes HashMap.
@@ -44,7 +46,7 @@ public interface Model {
 	void loadMaze(String fileName, String name);
 
 	/**
-	 * GEt the memory size of a Maze3d instance and display it.
+	 * Get the memory size of a Maze3d instance and display it.
 	 * @param name the Maze3d name in the mazes HashMap.
 	 */
 	void mazeSize(String name);
@@ -61,53 +63,28 @@ public interface Model {
 	 * @param index
 	 * @param maze
 	 */
-	void generateCrossSectionByX(String index, String name);
+	void displayCrossSectionByX(String index, String name);
 
 	/**
 	 * Generates a Crossed 2d maze for the given Y index by a Maze3d instance.
 	 * @param index
 	 * @param maze
 	 */
-	void generateCrossSectionByY(String index, String name);
+	void displayCrossSectionByY(String index, String name);
 
 	/**
 	 * Generates a Crossed 2d maze for the given Z index by a Maze3d instance.
 	 * @param index
 	 * @param maze
 	 */
-	void generateCrossSectionByZ(String index, String name);
+	void displayCrossSectionByZ(String index, String name);
 
 	/**
-	 * a getter method to return a Maze3d from the mazes HashMap.
+	 * an inner getter method, used by the model to return a Maze3d from the mazes HashMap.
 	 * @param name the Maze3d name.
 	 * @return the given Maze3d.
 	 */
 	Maze3d getMaze(String name);
-
-	/**
-	 * a getter method to return a solution to Maze3d from the solutions HashMap.
-	 * @param solution the solution to the Maze3d.
-	 * @return the given solution.
-	 */
-	Solution getSolution(String solution);
-
-	/**
-	 * a setter method, used to set a 2d instance of a Maze3d, used for the generateCrossSection methods.
-	 * @param maze2d
-	 */
-	public void setMaze2d(int[][] maze2d);
-
-	/**
-	 * a getter method, used to get the 2d instance of a Maze3d, used for the display's crossSection methods.
-	 * @return
-	 */
-	public int[][] getMaze2d();
-
-	/**
-	 * a getter method, used to get the solutions map.
-	 * @return the solutions map.
-	 */
-	public HashMap<String, Solution> getSolutions();
 
 	/**
 	 * Exiting method, used to terminate all the files and threads in order.

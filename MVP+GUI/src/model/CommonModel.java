@@ -23,7 +23,10 @@ public abstract class CommonModel extends Observable implements Model {
 	/** @param mazes a map used to store all the Maze3d instances. */
 	protected HashMap<String, Maze3d> mazes;
 	
-	/** @param solutions a map used to store the solutions for the Maze3d instances. */
+	/** @param solutions a map used to store the solutions for the Maze3d instances.
+	 * This map will be used to identify if a solution is already exists to a maze.
+	 * If it does, the existing solution will be used instead of solving it once again.
+	 */
 	protected HashMap<String, Solution> solutions;
 	
 	/** @param message a string message by the model, used to be received by the presenter as an observer. */
@@ -42,9 +45,5 @@ public abstract class CommonModel extends Observable implements Model {
 		solutions = new HashMap<String, Solution>();
 		threads = new ArrayList<Thread>();
 		threadPool = Executors.newCachedThreadPool();
-	}
-	
-	public String getMessage(){
-		return message;
 	}
 }

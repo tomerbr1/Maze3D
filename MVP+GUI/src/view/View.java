@@ -1,7 +1,5 @@
 package view;
 
-import algorithms.search.Solution;
-import maze.generators.Maze3d;
 import presenter.Presenter;
 
 /**
@@ -51,24 +49,6 @@ public interface View {
 	 * @param fileName
 	 */
 	void fileSize(String fileName);
-	
-	/**
-	 * Display a Maze3d to the output.
-	 * @param maze the Maze3d instance.
-	 */
-	void displayMaze(Maze3d maze);
-	
-	/**
-	 * Display a Crossed 2d maze for the given coordinate of a Maze3d instance.
-	 * @param maze2d the crossed 2d maze
-	 */
-	void displayMaze2d(int[][] maze2d);
-	
-	/**
-	 * Display the solution steps for a Maze3d instance.
-	 * @param solution the solution instance from the solutions map.
-	 */
-	void displaySolution(Solution solution);
 	
 	/**
 	 * Display the commands list for CLI client.

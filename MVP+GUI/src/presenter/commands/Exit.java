@@ -22,5 +22,6 @@ public class Exit implements Command {
 	public void doCommand(String[] args) {
 		view.exit();
 		model.exit();
+		System.out.println("\nThank you for playing Maze3D!");
 	}
 }
