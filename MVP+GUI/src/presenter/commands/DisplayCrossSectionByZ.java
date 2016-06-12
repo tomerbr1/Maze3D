@@ -1,6 +1,5 @@
 package presenter.commands;
 
-import maze.generators.Maze3d;
 import model.Model;
 import view.View;
 
