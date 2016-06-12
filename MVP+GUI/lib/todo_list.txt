@@ -1,0 +1,18 @@
+Run
+~
+CLI
+Changed PrintWriter to Writer
+MyView
+View
+~
+Presenter - need to add more commands
+~
+Model
+CommonModel
+MyModel
+~
+Command
+DisplayCrossSection{X,Y,Z}
+DisplayMessage
+Dir
+DisplayMaze
