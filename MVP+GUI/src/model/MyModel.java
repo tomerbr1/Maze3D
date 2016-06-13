@@ -1,13 +1,19 @@
 package model;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import algorithms.demo.MazeAdapter;
 import algorithms.search.BestFirstSearch;
@@ -34,6 +40,21 @@ public class MyModel extends CommonModel implements Model {
 	 */
 	public MyModel() {
 		super();
+	}
+
+	@Override
+	public void compressAndSave() {
+			//Compress to gzip and save the mazeToSol map.
+			try {
+				GZIPOutputStream zip = new GZIPOutputStream(new FileOutputStream("mazesToSol.zip"));
+				ObjectOutputStream out = new ObjectOutputStream(zip);
+				out.writeObject(mazeToSol);
+				out.close();
+			} catch (IOException e) {
+				setChanged();
+				notifyObservers("(MyModel\\compressAndSave) Input\\Output Error while saving the map.");
+				e.printStackTrace();
+			}
 	}
 
 	@Override
@@ -176,6 +197,24 @@ public class MyModel extends CommonModel implements Model {
 	}
 
 	@Override
+	public HashMap<Maze3d, Solution> getMazeToSol() {
+		return mazeToSol;
+	}
+
+	@Override
+	public Solution getSolution(String name) {
+		if (solutions.containsKey(name)){
+			Solution solution = solutions.get(name);
+			return solution;
+		}
+		else{
+			setChanged();
+			notifyObservers("Solution not found.\n");
+		}
+		return null;
+	}
+
+	@Override
 	public void generateMaze(String name, int rows, int cols, int depth) {
 
 		//Generate the Maze3d by a submitting a new value-returning (Callable) thread to the threadPool.
@@ -190,6 +229,35 @@ public class MyModel extends CommonModel implements Model {
 				return null;
 			}
 		});
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void loadAndDecompress() {
+		File file = new File("mazeToSol.zip");
+		if (!file.exists()) {
+			setChanged();
+			notifyObservers("File mazeToSol.zip not exists.\n");
+		}
+		else
+		{
+			try {
+				GZIPInputStream unzip = new GZIPInputStream(new FileInputStream(("mazeToSol.zip")));
+				ObjectInputStream in = new ObjectInputStream(unzip);
+				mazeToSol = (HashMap<Maze3d, Solution>)	in.readObject();
+				in.close();
+				unzip.close();
+				}
+			catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			catch (IOException e) {
+				setChanged();
+				notifyObservers("(MyModel\\loadAndDecopress) Input\\Output Error.\n");
+			}
+
+			}
+
 	}
 
 	@Override

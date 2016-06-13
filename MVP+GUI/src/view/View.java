@@ -11,7 +11,7 @@ import presenter.Presenter;
 public interface View {
 	
 	/**
-	 * Starting the user interface.
+	 * Starting the user interface by a basic thread.
 	 */
 	void start();
 	

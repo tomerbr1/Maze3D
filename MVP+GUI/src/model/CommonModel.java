@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +23,7 @@ public abstract class CommonModel extends Observable implements Model {
 	protected HashMap<String, Maze3d> mazes;
 	
 	/** @param solutions a map used to store the solutions for the Maze3d instances.
-	 * This map will be used to identify if a solution is already exists to a maze.
+	 * This map is used to identify if a solution is already exists to a maze.
 	 * If it does, the existing solution will be used instead of solving it once again.
 	 */
 	protected HashMap<String, Solution> solutions;
@@ -32,8 +31,10 @@ public abstract class CommonModel extends Observable implements Model {
 	/** @param message a string message by the model, used to be received by the presenter as an observer. */
 	protected String message;
 	
-	/** @param threads a list used to store all the working threads ids. */
-	protected ArrayList<Thread> threads = new ArrayList<Thread>();
+	/** @param mazeToSol a map used to bind between a Maze3D to its solution.
+	 * This map is used to be loaded when the game starts by decompressing itself from a gzip file,
+	 * and automatically saved when game exits be compressing it to a gzip file.*/
+	protected HashMap<Maze3d, Solution> mazeToSol;
 	
 	protected ExecutorService threadPool;
 	
@@ -43,7 +44,7 @@ public abstract class CommonModel extends Observable implements Model {
 	public CommonModel() {
 		mazes = new HashMap<String, Maze3d>();
 		solutions = new HashMap<String, Solution>();
-		threads = new ArrayList<Thread>();
+		mazeToSol = new HashMap<Maze3d, Solution>();
 		threadPool = Executors.newCachedThreadPool();
 	}
 }
