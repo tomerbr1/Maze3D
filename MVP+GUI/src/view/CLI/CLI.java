@@ -1,23 +1,25 @@
-package view;
+package view.CLI;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
+import view.CommonView;
+
 /**
  * Defines the MyCLIView view, a command line based interface.
  * @author Tomer
  * 
  */
-public class MyCLIView extends CommonView {
+public class CLI extends CommonView {
 
 	/**
 	 * CTOR to initiate the CLI View
-	 * @param in
-	 * @param out
+	 * @param in - the input
+	 * @param out - the output
 	 */
-	public MyCLIView(BufferedReader in, Writer out) {
+	public CLI(BufferedReader in, Writer out) {
 		super(in, out);
 	}
 
@@ -26,7 +28,7 @@ public class MyCLIView extends CommonView {
 	 */
 	public void start(){
 		//Displaying a welcome message
-		displayMessage("Welcome to the Maze3D CLI!\nType help to view available commands to use.\n\n");
+		displayMessage("Welcome to the 3D Maze CLI!\nType help to view available commands to use.\n\n");
 		
 		Thread thread = new Thread(new Runnable() {
 
@@ -37,7 +39,7 @@ public class MyCLIView extends CommonView {
 					do {
 						out.write("Enter command: ");
 						out.flush();
-						line = in.readLine();
+						line = in.readLine().toLowerCase();
 						setChanged();
 						notifyObservers(line);
 						if (line.contains("generate_maze_3d") || line.contains("solve ")){
@@ -79,7 +81,10 @@ public class MyCLIView extends CommonView {
 
 	}
 
-	@Override
+	/**
+	 * Display a file sizes in bytes.
+	 * @param fileName
+	 */
 	public void fileSize(String fileName) {			
 		File file = new File(fileName);
 
@@ -90,7 +95,10 @@ public class MyCLIView extends CommonView {
 			displayMessage("The size of " + fileName + " file is " + file.length() + " bytes.\n");
 	}
 
-	@Override
+	/**
+	 * Display all the files and folders in the entered path.
+	 * @param path
+	 */
 	public void dirPath(String path) {
 
 		try {
@@ -108,7 +116,9 @@ public class MyCLIView extends CommonView {
 		}
 	}
 
-	@Override
+	/**
+	 * Display the commands list for CLI client.
+	 */
 	public void displayHelp() {
 
 		displayMessage("***********************\n");
@@ -121,10 +131,10 @@ public class MyCLIView extends CommonView {
 		displayMessage("5) display_maze <maze_name> - Display a 3D Maze.\n");
 		displayMessage("6) display_solution <maze_name> - Display the solution for a 3D Maze.\n");
 		displayMessage("7) file_size <name_of_file> - Display a file sizes in bytes.\n");
-		displayMessage("8) generate_maze_3d <maze_name> <height> <width> <depth> - Generate a new 3d Maze according to the given parameters.\n");
-		displayMessage("9) load_maze <name_of_file.txt> <maze_name> - Load a compressed Maze3d from file.");
+		displayMessage("8) generate_maze_3d <maze_name> <height> <width> <depth> - Generate a new 3d Maze according to the given parameters and chosen generating algorithm.\n");
+		displayMessage("9) load_maze <name_of_file.txt> <maze_name> - Load a compressed Maze3d from file.\n");
 		displayMessage("10) save_maze <maze_name> <name_of_file.txt> - Save and compress a Maze3d into file.\n");
-		displayMessage("11) solve <maze_name> <search_algorithm> - Solve a 3D Maze using a searching algorithm.\n");
+		displayMessage("11) solve <maze_name> - Solve a 3D Maze using the chosen searching algorithm.\n");
 		//displayMessage("\"save_zip_map\" <file_name>\n");
 		//displayMessage("\"load_zip_map\" <file_name>\n");
 		displayMessage("12) exit - Terminates the game.\n");	

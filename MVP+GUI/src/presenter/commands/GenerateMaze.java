@@ -2,6 +2,7 @@ package presenter.commands;
 
 import view.View;
 import model.Model;
+import presenter.Properties;
 
 /**
  * Defines the GenerateMaze command.
@@ -12,10 +13,13 @@ public class GenerateMaze implements Command {
 
 	private Model model;
 	private View view;
+	private Properties prop;
 
-	public GenerateMaze(View view, Model model) {
+	
+	public GenerateMaze(View view, Model model, Properties prop) {
 		this.model = model;
 		this.view = view;
+		this.prop = prop;
 	}
 
 	@Override
@@ -29,7 +33,7 @@ public class GenerateMaze implements Command {
 				int cols = Integer.parseInt(args[1]);
 				int rows = Integer.parseInt(args[2]);
 				int depth = Integer.parseInt(args[3]);
-				model.generateMaze(name, cols, rows, depth);
+				model.generateMaze(name, cols, rows, depth, prop.getGenerateAlgorithm());
 			} 
 			catch (NumberFormatException e) {
 				view.displayMessage("(Presenter\\GenerateMaze Cmd) Invalid numbers entered.\n");

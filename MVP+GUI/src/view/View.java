@@ -16,6 +16,17 @@ public interface View {
 	void start();
 	
 	/**
+	 * Display all the files and folders in the entered path.
+	 * @param path
+	 */
+	public void dirPath(String path);
+
+	/**
+	 * Display the commands list for CLI client.
+	 */
+	public void displayHelp();
+
+	/**
 	 * Displaying a string to the output.
 	 * @param string
 	 */
@@ -28,30 +39,25 @@ public interface View {
 	void displayMessage(String[] strings);
 	
 	/**
+	 * Closing the user interface.
+	 */
+	void exit();
+
+	/**
+	 * Display a file sizes in bytes.
+	 * @param fileName
+	 */
+	public void fileSize(String fileName);
+
+	/**
 	 * Setting the presenter to the view interface.
 	 * @param presenter
 	 */
 	void setPresenter(Presenter presenter);
 	
 	/**
-	 * Closing the user interface.
-	 */
-	void exit();
-	
-	/**
 	 * Display all the files and folders in the given path.
 	 * @param path
 	 */
-	void dirPath(String path);
-	
-	/**
-	 * Display a file sizes in bytes.
-	 * @param fileName
-	 */
-	void fileSize(String fileName);
-	
-	/**
-	 * Display the commands list for CLI client.
-	 */
-	void displayHelp();
+
 }

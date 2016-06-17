@@ -32,6 +32,7 @@ public class Presenter implements Observer {
 
 	private Model model;
 	private View view;
+	private Properties prop;
 	private HashMap<String, Command> commands;
 
 	/**
@@ -39,9 +40,10 @@ public class Presenter implements Observer {
 	 * @param model The model.
 	 * @param view The View.
 	 */
-	public Presenter(Model model, View view) {
+	public Presenter(Model model, View view, Properties prop) {
 		this.model = model;
 		this.view = view;
+		this.prop = prop;
 		setCommands();
 	}
 
@@ -60,22 +62,20 @@ public class Presenter implements Observer {
 		commands = new HashMap<String, Command>();
 
 		//View's commands
-		commands.put("generate_maze_3d", new GenerateMaze(view, model));
+		commands.put("generate_maze_3d", new GenerateMaze(view, model, prop));
 		commands.put("display_maze", new DisplayMaze(view, model));
 		commands.put("file_size", new FileSize(view));
 		commands.put("maze_size", new MazeSize(view, model));
 		commands.put("dir", new Dir(view));
 		commands.put("load_maze", new LoadMaze(view, model));
 		commands.put("save_maze", new SaveMaze(view, model));
-		commands.put("solve", new SolveMaze(view, model));
+		commands.put("solve", new SolveMaze(view, model, prop));
 		commands.put("cross_section_by_x", new DisplayCrossSectionByX(view, model));
 		commands.put("cross_section_by_y", new DisplayCrossSectionByY(view, model));
 		commands.put("cross_section_by_z", new DisplayCrossSectionByZ(view, model));
 		commands.put("display_solution", new DisplaySolution(view, model));
 		commands.put("help", new DisplayHelp(view));
 		commands.put("exit", new Exit(view, model));
-		// commands.put("save_zip_map", new SaveZipMap(model, view));
-		// commands.put("load_zip_map", new LoadZipMap(model, view));
 
 		//Model's commands
 		commands.put("display_solution", new DisplaySolution(view, model));

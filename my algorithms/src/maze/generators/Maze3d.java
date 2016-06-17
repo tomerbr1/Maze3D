@@ -286,6 +286,14 @@ public class Maze3d {
 	}
 	
 	/**
+	 * Returns the value of a specific position in the maze3d/
+	 * @param pos
+	 * @return 1 = Wall, 0 = Free
+	 */
+	public int getPositionValue(Position pos){
+		return maze[pos.x][pos.y][pos.z];
+	}
+	/**
 	 * This method overrides the Object's equals method in order to compare two maze objects.
 	 */
 	@Override

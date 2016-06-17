@@ -65,7 +65,7 @@ public interface Model {
 	 * @param cols the Y dimension. 
 	 * @param depth the Z dimension.
 	 */
-	void generateMaze(String name, int rows, int cols, int depth);
+	void generateMaze(String name, int rows, int cols, int depth, String generateAlgorithm);
 
 	// Getter methods //
 	

@@ -23,6 +23,8 @@ import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 import maze.generators.Maze3d;
 import maze.generators.MyMaze3dGenerator;
+import maze.generators.SimpleMaze3dGenerator;
+import presenter.Properties;
 
 /**
  * Defines the MyModel model.
@@ -215,18 +217,32 @@ public class MyModel extends CommonModel implements Model {
 	}
 
 	@Override
-	public void generateMaze(String name, int rows, int cols, int depth) {
+	public void generateMaze(String name, int rows, int cols, int depth, String generateAlgorithm) {
 
 		//Generate the Maze3d by a submitting a new value-returning (Callable) thread to the threadPool.
 		threadPool.submit(new Callable<Maze3d>() {
 
 			@Override
 			public Maze3d call() throws Exception {
-				Maze3d maze = new MyMaze3dGenerator().generate(cols, rows, depth);
+				Maze3d maze = null;
+
+				//generate a maze using the chosen algorithm from properies.xml
+				switch(generateAlgorithm){
+				case "MyMaze3dGenerator":
+					maze = new MyMaze3dGenerator().generate(cols, rows, depth);
+					break;
+				case "SimpleMaze3dGenerator":
+					maze = new SimpleMaze3dGenerator().generate(cols, rows, depth);
+					break;
+				default:
+					setChanged();
+					notifyObservers("an error occured whle trying to create Maze " + name + ".\nGenerating algorithm name is missing.\n");
+					return null;
+				}
 				mazes.put(name, maze);
 				setChanged();
-				notifyObservers("Maze " + name + " is ready.\n");
-				return null;
+				notifyObservers("Maze " + name + " is created succesfully by " + generateAlgorithm + "!\n");
+				return null;	
 			}
 		});
 	}
@@ -376,7 +392,7 @@ public class MyModel extends CommonModel implements Model {
 	}
 
 	@Override
-	public void solveMaze(String name, String algorithm) {
+	public void solveMaze(String name, String searchAlgorithm) {
 
 		if (!mazes.containsKey(name)){
 			setChanged();
@@ -406,25 +422,25 @@ public class MyModel extends CommonModel implements Model {
 						Solution solution;
 						MazeAdapter adapter = new MazeAdapter(maze);
 
-						//Check which search algorithm is in the user input.
-						switch(algorithm){
-						case "bfs":
+						//Solve the maze using the chosen search algorithm from properies.xml
+						switch(searchAlgorithm){
+						case "BFS":
 							BestFirstSearch bfs = new BestFirstSearch();
 							solution = bfs.search(adapter);
 							solutions.put(maze.toString(), solution);
 							setChanged();
-							notifyObservers(name + " maze is solved by " + algorithm + " successfully!\n");
+							notifyObservers(name + " maze is solved by " + searchAlgorithm + " successfully!\n");
 							break;
-						case "dfs":
+						case "DFS":
 							DFS dfs = new DFS();
 							solution = dfs.search(adapter);
 							solutions.put(maze.toString(), solution);
 							setChanged();
-							notifyObservers(name + " maze is solved by " + algorithm + " successfully!\n");
+							notifyObservers(name + " maze is solved by " + searchAlgorithm + " successfully!\n");
 							break;
 						default:
 							setChanged();
-							notifyObservers("The algorithm " + algorithm + " doesn't exists.\nPlease choose between \"bfs\" and \"dfs\".\n");
+							notifyObservers("an error occured whle trying to solve Maze " + name + ".\nSearching algorithm name is missing.\n");
 							break;
 						}
 					}
