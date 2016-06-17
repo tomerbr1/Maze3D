@@ -31,6 +31,6 @@ public class SolveMaze implements Command {
 			model.solveMaze(name, prop.getSearchAlgorithm());
 		}
 		else
-			view.displayMessage("(Presenter\\Solve Maze Cmd) Missing Parameters.\n");		
+			view.display("(Presenter\\Solve Maze Cmd) Missing Parameters.\n");		
 	}
 }

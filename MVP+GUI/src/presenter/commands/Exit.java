@@ -1,7 +1,6 @@
 package presenter.commands;
 
 import model.Model;
-import view.View;
 
 /**
  * Defines the exit command.
@@ -10,17 +9,14 @@ import view.View;
  */
 public class Exit implements Command {
 
-	private View view;
 	private Model model;
 	
-	public Exit(View view, Model model) {
-		this.view = view;
+	public Exit(Model model) {
 		this.model = model;
 	}
 	
 	@Override
 	public void doCommand(String[] args) {
-		view.exit();
 		model.exit();
 		System.out.println("\nThank you for playing Maze3D!");
 	}

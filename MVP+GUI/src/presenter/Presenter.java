@@ -75,7 +75,7 @@ public class Presenter implements Observer {
 		commands.put("cross_section_by_z", new DisplayCrossSectionByZ(view, model));
 		commands.put("display_solution", new DisplaySolution(view, model));
 		commands.put("help", new DisplayHelp(view));
-		commands.put("exit", new Exit(view, model));
+		commands.put("exit", new Exit(model));
 
 		//Model's commands
 		commands.put("display_solution", new DisplaySolution(view, model));
@@ -96,13 +96,13 @@ public class Presenter implements Observer {
 			}
 			Command command = commands.get(commandName);
 			if (command == null){
-				view.displayMessage("Command not found\n");
+				view.display("Command not found\n");
 				return;
 			}
 			command.doCommand(args);
 		}
 		else if (o == model) {
-			view.displayMessage((String)arg);
+			view.display((String)arg);
 		}
 	}
 }

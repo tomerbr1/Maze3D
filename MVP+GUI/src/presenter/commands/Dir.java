@@ -20,7 +20,7 @@ public class Dir implements Command {
 		
 		if (args == null || args.length != 1)
 		{
-			view.displayMessage("(Presenter\\Dir Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\Dir Cmd) Missing Parameters.\n");
 			return;
 		}
 		else

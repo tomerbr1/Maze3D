@@ -23,7 +23,7 @@ public class MazeSize implements Command {
 
 		if (args == null)
 		{
-			view.displayMessage("(Presenter\\MazeSize Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\MazeSize Cmd) Missing Parameters.\n");
 			return;
 		}
 		else

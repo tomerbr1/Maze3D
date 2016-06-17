@@ -36,13 +36,13 @@ public class GenerateMaze implements Command {
 				model.generateMaze(name, cols, rows, depth, prop.getGenerateAlgorithm());
 			} 
 			catch (NumberFormatException e) {
-				view.displayMessage("(Presenter\\GenerateMaze Cmd) Invalid numbers entered.\n");
+				view.display("(Presenter\\GenerateMaze Cmd) Invalid numbers entered.\n");
 				return;
 			}
 		}
 		else
 		{
-			view.displayMessage("(Presenter\\GenerateMaze Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\GenerateMaze Cmd) Missing Parameters.\n");
 			return;
 		}
 	}

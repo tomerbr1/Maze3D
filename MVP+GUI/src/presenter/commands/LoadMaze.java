@@ -29,7 +29,7 @@ public class LoadMaze implements Command {
 		}
 		else
 		{
-			view.displayMessage("(Presenter\\LoadMaze Cmd) Missing paramters.\n");
+			view.display("(Presenter\\LoadMaze Cmd) Missing paramters.\n");
 			return;
 		}
 	}

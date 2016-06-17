@@ -30,25 +30,20 @@ public interface View {
 	 * Displaying a string to the output.
 	 * @param string
 	 */
-	void displayMessage(String string);
+	void display(String string);
 	
 	/**
 	 * Displaying strings to the output.
 	 * @param strings
 	 */
-	void displayMessage(String[] strings);
-	
-	/**
-	 * Closing the user interface.
-	 */
-	void exit();
+	void display(String[] strings);
 
 	/**
 	 * Display a file sizes in bytes.
 	 * @param fileName
 	 */
 	public void fileSize(String fileName);
-
+	
 	/**
 	 * Setting the presenter to the view interface.
 	 * @param presenter

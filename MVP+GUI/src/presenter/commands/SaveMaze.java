@@ -29,7 +29,7 @@ public class SaveMaze implements Command {
 		}
 		else
 		{
-			view.displayMessage("(Presenter\\Save Maze Cmd) Missing Paramters.\n");
+			view.display("(Presenter\\Save Maze Cmd) Missing Paramters.\n");
 			return;
 		}
 	}

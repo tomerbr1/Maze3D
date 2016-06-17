@@ -25,7 +25,7 @@ public class FileSize implements Command {
 		}
 		else
 		{
-			view.displayMessage("(Presenter\\FileSize Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\FileSize Cmd) Missing Parameters.\n");
 			return;
 		}
 	}

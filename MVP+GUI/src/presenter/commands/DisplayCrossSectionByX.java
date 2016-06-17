@@ -23,7 +23,7 @@ public class DisplayCrossSectionByX implements Command {
 
 		if (args == null || (args[0].contains("[a-zA-Z]+") == false && args[0].length() > 2 || args[1] == null))
 		{
-			view.displayMessage("(Presenter\\DisplayCrossSectionByX Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\DisplayCrossSectionByX Cmd) Missing Parameters.\n");
 			return;
 		}
 		else

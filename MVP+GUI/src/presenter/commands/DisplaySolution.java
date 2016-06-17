@@ -27,6 +27,6 @@ public class DisplaySolution implements Command {
 			model.displaySolution(solutionName);
 		}
 		else
-			view.displayMessage("(Presenter\\DisplaySolution Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\DisplaySolution Cmd) Missing Parameters.\n");
 	}
 }

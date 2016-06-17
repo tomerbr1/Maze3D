@@ -18,8 +18,8 @@ public abstract class CommonView extends Observable implements View {
 	protected Presenter presenter;
 	
 	public abstract void start();
-	public abstract void displayMessage(String message);
-	public abstract void displayMessage(String[] messages);
+	public abstract void display(String message);
+	public abstract void display(String[] messages);
 	
 	/**
 	 * CTOR to initiate what every view has to.
@@ -34,10 +34,5 @@ public abstract class CommonView extends Observable implements View {
 	@Override
 	public void setPresenter(Presenter presenter){
 		this.presenter = presenter;
-	}
-
-	@Override
-	public void exit() {
-		displayMessage("Exiting...\n");
 	}
 }

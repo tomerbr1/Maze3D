@@ -22,7 +22,7 @@ public class DisplayMaze implements Command {
 	public void doCommand(String[] args) {
 
 		if (args == null)
-			view.displayMessage("(Presenter\\DisplayMaze Cmd) Missing Parameters.\n");
+			view.display("(Presenter\\DisplayMaze Cmd) Missing Parameters.\n");
 		else
 		{
 			String name = args[0];
