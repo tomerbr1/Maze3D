@@ -46,7 +46,7 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 		int[][][] m = maze.getMaze();
 		for (int z = 0; z < maze.getDepth(); z++) {
 			for (int y = 0; y < maze.getRows(); y++) {
-				for (int x = 0; x < maze.getCols(); x++) {
+				for (int x = 0; x < maze.getColumns(); x++) {
 					m[x][y][z] = Maze3d.WALL;
 				}
 			}
@@ -58,9 +58,9 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 	 * @return a random position
 	 */
 	private Position choosePosition() {		
-		int x = rand.nextInt(maze.getCols());
+		int x = rand.nextInt(maze.getColumns());
 		while (x % 2 == 1)
-			x = rand.nextInt(maze.getCols());
+			x = rand.nextInt(maze.getColumns());
 		
 		int y = rand.nextInt(maze.getRows());
 		while (y % 2 == 1)
@@ -83,27 +83,27 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 		int[][] []m = maze.getMaze();
 		
 		// Check up neighbor
-		if (pos.x + 2 < maze.getCols() && m[pos.x+2][pos.y][pos.z] == Maze3d.WALL)
+		if (pos.getX() + 2 < maze.getColumns() && m[pos.getX()+2][pos.getY()][pos.getZ()] == Maze3d.WALL)
 			dirs.add(Direction.UP);
 		
 		// Check down neighbor
-		if (pos.x - 2 >= 0 && m[pos.x-2][pos.y][pos.z] == Maze3d.WALL)
+		if (pos.getX() - 2 >= 0 && m[pos.getX()-2][pos.getY()][pos.getZ()] == Maze3d.WALL)
 			dirs.add(Direction.DOWN);
 
 		// Check right neighbor
-		if (pos.y + 2 < maze.getRows() && m[pos.x][pos.y + 2][pos.z] == Maze3d.WALL)
+		if (pos.getY() + 2 < maze.getRows() && m[pos.getX()][pos.getY() + 2][pos.getZ()] == Maze3d.WALL)
 			dirs.add(Direction.RIGHT);
 
 		// Check left neighbor
-		if (pos.y - 2 >= 0 && m[pos.x][pos.y - 2][pos.z] == Maze3d.WALL)
+		if (pos.getY() - 2 >= 0 && m[pos.getX()][pos.getY() - 2][pos.getZ()] == Maze3d.WALL)
 			dirs.add(Direction.LEFT);
 
 		// Check forward neighbor
-		if (pos.z + 2 < maze.getDepth() && m[pos.x][pos.y ][pos.z+2] == Maze3d.WALL)
+		if (pos.getZ() + 2 < maze.getDepth() && m[pos.getX()][pos.getY() ][pos.getZ()+2] == Maze3d.WALL)
 			dirs.add(Direction.FORWARD);
 				
 		// Check backward neighbor
-		if (pos.z - 2 >= 0 && m[pos.x][pos.y][pos.z-2] == Maze3d.WALL)
+		if (pos.getZ() - 2 >= 0 && m[pos.getX()][pos.getY()][pos.getZ()-2] == Maze3d.WALL)
 			dirs.add(Direction.BACKWARD);
 			
 		return dirs;
@@ -128,34 +128,34 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 			
 			switch (dir) {
 			case UP:
-				m[pos.x+1][pos.y][pos.z] = Maze3d.FREE;	
-				m[pos.x+2][pos.y][pos.z] = Maze3d.FREE;	
-				DFS(new Position(pos.x+2, pos.y,pos.z));
+				m[pos.getX()+1][pos.getY()][pos.getZ()] = Maze3d.FREE;	
+				m[pos.getX()+2][pos.getY()][pos.getZ()] = Maze3d.FREE;	
+				DFS(new Position(pos.getX()+2, pos.getY(),pos.getZ()));
 				break;
 			case DOWN:
-				m[pos.x-1][pos.y][pos.z] = Maze3d.FREE;	
-				m[pos.x-2][pos.y][pos.z] = Maze3d.FREE;	
-				DFS(new Position(pos.x-2, pos.y,pos.z));
+				m[pos.getX()-1][pos.getY()][pos.getZ()] = Maze3d.FREE;	
+				m[pos.getX()-2][pos.getY()][pos.getZ()] = Maze3d.FREE;	
+				DFS(new Position(pos.getX()-2, pos.getY(),pos.getZ()));
 				break;
 			case RIGHT:
-				m[pos.x][pos.y+1][pos.z] = Maze3d.FREE;		
-				m[pos.x][pos.y+2][pos.z] = Maze3d.FREE;	
-				DFS(new Position(pos.x, pos.y+2,pos.z));
+				m[pos.getX()][pos.getY()+1][pos.getZ()] = Maze3d.FREE;		
+				m[pos.getX()][pos.getY()+2][pos.getZ()] = Maze3d.FREE;	
+				DFS(new Position(pos.getX(), pos.getY()+2,pos.getZ()));
 				break;	
 			case LEFT:
-				m[pos.x][pos.y-1][pos.z] = Maze3d.FREE;	
-				m[pos.x][pos.y-2][pos.z] = Maze3d.FREE;	
-				DFS(new Position(pos.x, pos.y-2,pos.z));
+				m[pos.getX()][pos.getY()-1][pos.getZ()] = Maze3d.FREE;	
+				m[pos.getX()][pos.getY()-2][pos.getZ()] = Maze3d.FREE;	
+				DFS(new Position(pos.getX(), pos.getY()-2,pos.getZ()));
 				break;	
 			case BACKWARD:
-				m[pos.x][pos.y][pos.z-1] = Maze3d.FREE;		
-				m[pos.x][pos.y][pos.z-2] = Maze3d.FREE;	
-				DFS(new Position(pos.x, pos.y,pos.z-2));
+				m[pos.getX()][pos.getY()][pos.getZ()-1] = Maze3d.FREE;		
+				m[pos.getX()][pos.getY()][pos.getZ()-2] = Maze3d.FREE;	
+				DFS(new Position(pos.getX(), pos.getY(),pos.getZ()-2));
 				break;
 			case FORWARD:
-				m[pos.x][pos.y][pos.z+1] = Maze3d.FREE;	
-				m[pos.x][pos.y][pos.z+2] = Maze3d.FREE;	
-				DFS(new Position(pos.x, pos.y,pos.z+2));
+				m[pos.getX()][pos.getY()][pos.getZ()+1] = Maze3d.FREE;	
+				m[pos.getX()][pos.getY()][pos.getZ()+2] = Maze3d.FREE;	
+				DFS(new Position(pos.getX(), pos.getY(),pos.getZ()+2));
 				break;
 			}
 		}

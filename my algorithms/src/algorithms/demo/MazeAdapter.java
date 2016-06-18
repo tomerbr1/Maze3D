@@ -78,17 +78,17 @@ public class MazeAdapter implements Searchable {
 	private Position getNextPosition(Position currPos, Direction dir) {
 		switch (dir) {
 		case RIGHT:
-			return new Position(currPos.x + 1, currPos.y, currPos.z);			
+			return new Position(currPos.getX() + 1, currPos.getY(), currPos.getZ());			
 		case LEFT:
-			return new Position(currPos.x - 1, currPos.y, currPos.z);	
+			return new Position(currPos.getX() - 1, currPos.getY(), currPos.getZ());	
 		case DOWN:
-			return new Position(currPos.x, currPos.y + 1, currPos.z);	
+			return new Position(currPos.getX(), currPos.getY() + 1, currPos.getZ());	
 		case UP:
-			return new Position(currPos.x, currPos.y - 1, currPos.z);
+			return new Position(currPos.getX(), currPos.getY() - 1, currPos.getZ());
 		case FORWARD:
-			return new Position(currPos.x, currPos.y, currPos.z + 1);	
+			return new Position(currPos.getX(), currPos.getY(), currPos.getZ() + 1);	
 		case BACKWARD:
-			return new Position(currPos.x, currPos.y, currPos.z - 1);	
+			return new Position(currPos.getX(), currPos.getY(), currPos.getZ() - 1);	
 		}
 		return null;
 	}

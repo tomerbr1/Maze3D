@@ -34,7 +34,7 @@ public class Demo {
 		//BestFirstSearch bfs = new BestFirstSearch();
 		System.out.println("Solution:\n");
 		DFS dfs = new DFS();
-		Solution solution = dfs.search(null);
+		Solution solution = dfs.search(adapter);
 		
 		System.out.println(solution);
 		System.out.println("Num of nodes evaluated by solution: " + dfs.getEvaluatedNodes());
