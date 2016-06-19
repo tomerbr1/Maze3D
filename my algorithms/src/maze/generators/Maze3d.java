@@ -289,6 +289,10 @@ public class Maze3d {
 	public int getPositionValue(Position pos){
 		return maze[pos.getX()][pos.getY()][pos.getZ()];
 	}
+	
+	public int getPositionValueInts(int x, int y, int z){
+		return maze[x][y][z];
+	}
 	/**
 	 * This method overrides the Object's equals method in order to compare two maze objects.
 	 */

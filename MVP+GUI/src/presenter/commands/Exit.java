@@ -18,6 +18,5 @@ public class Exit implements Command {
 	@Override
 	public void doCommand(String[] args) {
 		model.exit();
-		System.out.println("\nThank you for playing Maze3D!");
 	}
 }

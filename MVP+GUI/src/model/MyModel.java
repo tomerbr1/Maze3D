@@ -195,7 +195,7 @@ public class MyModel extends CommonModel implements Model {
 				else
 				{
 					setChanged();
-					notifyObservers(this.getClass().getName() + "'s threads terminated successfully.\n");
+					notifyObservers("Thank you for playing 3D Maze3D!\n\n" + this.getClass().getName() + "'s threads terminated successfully.\n");
 				}
 			} catch (InterruptedException e){
 				setChanged();
