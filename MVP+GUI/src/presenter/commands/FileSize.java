@@ -1,5 +1,6 @@
 package presenter.commands;
 
+import model.Model;
 import view.View;
 
 /**
@@ -10,9 +11,11 @@ import view.View;
 public class FileSize implements Command {
 
 	private View view;
+	private Model model;
 	
-	public FileSize(View view) {
+	public FileSize(View view, Model model) {
 		this.view = view;
+		this.model = model;
 	}
 
 	@Override
@@ -21,7 +24,7 @@ public class FileSize implements Command {
 		if (args != null)
 		{
 			String fileName = args[0];
-			view.fileSize(fileName);
+			model.fileSize(fileName);
 		}
 		else
 		{

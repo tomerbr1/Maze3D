@@ -39,7 +39,7 @@ public interface Model {
 	 * @param maze
 	 */
 	void displayCrossSectionByZ(String index, String name);
-
+	
 	/**
 	 * Display a Maze3d to the output.
 	 * @param maze the Maze3d instance.
@@ -52,12 +52,23 @@ public interface Model {
 	 */
 	void displaySolution(String name);
 	
+	/**
+	 * Display all the files and folders in the entered path.
+	 * @param path
+	 */
+	public void dirPath(String path);
+	
+	/**
+	 * Display a file sizes in bytes.
+	 * @param fileName
+	 */
+	public void fileSize(String fileName);
 	
 	/**
 	 * Exiting method, used to terminate all the files and threads in order.
 	*/
 	void exit();
-
+	
 	/**
 	 * Generate a new 3d Maze according to the given parameters.
 	 * @param name a string used to identify the maze in the mazes HashMap.

@@ -8,7 +8,7 @@
    <string>DFS</string>
   </void>
   <void property="ui">
-   <string>CLI</string>
+   <string>GUI</string>
   </void>
  </object>
 </java>

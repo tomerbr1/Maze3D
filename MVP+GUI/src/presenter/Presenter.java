@@ -61,12 +61,11 @@ public class Presenter implements Observer {
 	public void setCommands() {
 		commands = new HashMap<String, Command>();
 
-		//View's commands
 		commands.put("generate_maze_3d", new GenerateMaze(view, model, prop));
 		commands.put("display_maze", new DisplayMaze(view, model));
-		commands.put("file_size", new FileSize(view));
+		commands.put("file_size", new FileSize(view, model));
 		commands.put("maze_size", new MazeSize(view, model));
-		commands.put("dir", new Dir(view));
+		commands.put("dir", new Dir(view,model));
 		commands.put("load_maze", new LoadMaze(view, model));
 		commands.put("save_maze", new SaveMaze(view, model));
 		commands.put("solve", new SolveMaze(view, model, prop));
@@ -76,8 +75,6 @@ public class Presenter implements Observer {
 		commands.put("display_solution", new DisplaySolution(view, model));
 		commands.put("help", new DisplayHelp(view));
 		commands.put("exit", new Exit(model));
-
-		//Model's commands
 		commands.put("display_solution", new DisplaySolution(view, model));
 	}
 

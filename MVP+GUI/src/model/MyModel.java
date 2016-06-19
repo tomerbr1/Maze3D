@@ -21,10 +21,10 @@ import algorithms.search.DFS;
 import algorithms.search.Solution;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
+import maze.generators.CommonMaze3dGenerator;
 import maze.generators.Maze3d;
 import maze.generators.MyMaze3dGenerator;
 import maze.generators.SimpleMaze3dGenerator;
-import presenter.Properties;
 
 /**
  * Defines the MyModel model.
@@ -35,7 +35,7 @@ public class MyModel extends CommonModel implements Model {
 
 	/** @param maze2d used to store a crossed section maze */
 	private int[][] maze2d;
-
+	
 	/**
 	 * Initiates the MyModel model.
 	 * @param controller
@@ -161,6 +161,26 @@ public class MyModel extends CommonModel implements Model {
 		}
 	}
 
+	public void dirPath(String path) {
+
+		try {
+			File dir = new File(path);
+			File[] files = dir.listFiles();
+
+			if (files.length == 0){
+				setChanged();
+				notifyObservers("The directory is empty\n");
+			}
+			else{
+				setChanged();
+				notifyObservers(files);
+			}
+		} catch (NullPointerException e) {
+			setChanged();
+			notifyObservers("(MyCLIView\\dirPath) Invalid path.\n");
+		}
+	}
+	
 	@Override
 	public void exit() {
 		if (!threadPool.isTerminated())
@@ -185,6 +205,18 @@ public class MyModel extends CommonModel implements Model {
 		}
 	}
 
+	public void fileSize(String fileName) {			
+		File file = new File(fileName);
+
+		if (!file.exists() || !file.isFile()) {
+			setChanged();
+			notifyObservers("The file " + fileName + " doesn't exists.\n");
+		}
+		else
+			setChanged();
+			notifyObservers("The size of " + fileName + " file is " + file.length() + " bytes.\n");
+	}
+	
 	@Override
 	public Maze3d getMaze(String name){
 
@@ -341,7 +373,7 @@ public class MyModel extends CommonModel implements Model {
 		{
 			Maze3d maze = mazes.get(name);
 			setChanged();
-			notifyObservers("The size of " + name + " maze in the memory is: " + maze.getCols()*maze.getRows()*maze.getDepth() + ".\n");
+			notifyObservers("The size of " + name + " maze in the memory is: " + maze.getRows()*maze.getColumns()*maze.getDepth() + ".\n");
 		}
 		else
 		{
@@ -449,5 +481,4 @@ public class MyModel extends CommonModel implements Model {
 			});
 		}
 	}
-
 }

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Observable;
-
 /**
  * Defines the MyCLIView view, a command line based interface.
  * @author Tomer

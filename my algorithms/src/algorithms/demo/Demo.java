@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import algorithms.search.BestFirstSearch;
 import algorithms.search.DFS;
 import algorithms.search.Solution;
 import io.MyCompressorOutputStream;

@@ -1,5 +1,6 @@
 package presenter.commands;
 
+import model.Model;
 import view.View;
 
 /**
@@ -10,9 +11,11 @@ import view.View;
 public class Dir implements Command {
 
 	private View view;
+	private Model model;
 	
-	public Dir(View view) {
+	public Dir(View view, Model model) {
 		this.view = view;
+		this.model = model;
 	}
 	
 	@Override
@@ -26,7 +29,7 @@ public class Dir implements Command {
 		else
 		{
 			String path = args[0];
-			view.dirPath(path);
+			model.dirPath(path);
 		}
 	}
 }
