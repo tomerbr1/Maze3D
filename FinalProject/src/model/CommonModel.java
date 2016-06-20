@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.concurrent.ExecutorService;
@@ -36,7 +37,11 @@ public abstract class CommonModel extends Observable implements Model {
 	 * and automatically saved when game exits be compressing it to a gzip file.*/
 	protected HashMap<Maze3d, Solution> mazeToSol;
 	
+	private ArrayList<Thread> threads = new ArrayList<Thread>();
+	
 	protected ExecutorService threadPool;
+	
+	private Solution solution;
 	
 	/**
 	 * CTor to Initiate the common variables that every model has to initiate.
