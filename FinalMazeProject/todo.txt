@@ -1,0 +1,9 @@
+Classes
+-------
+V BasicWindow
+V MazeDisplayer (expect solve/hint)
+V Maze3D
+
+rows = x (up & down)
+columns = y (Right & left)
+depth = z (forward & backward)
