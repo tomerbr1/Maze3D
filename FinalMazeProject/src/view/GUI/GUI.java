@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -640,9 +641,11 @@ public class GUI extends BasicWindow implements View {
 			return;
 		}
 
-		String MazeFileSelectedName = fileSelected.substring(32, fileSelected.length() - 4);
+		String fileNameWithMAZ = fd.getFileName();
+		String tmpToMaze[] = fileNameWithMAZ.split(".maz");
+		MazeFileSelectedName = tmpToMaze[0];
+
 		System.out.println(MazeFileSelectedName);
-		String fileNameWithMAZ = fileSelected.substring(32);
 		System.out.println(fileNameWithMAZ);
 		setChanged();
 		String command = "load_maze " + fileNameWithMAZ + " " + MazeFileSelectedName;
