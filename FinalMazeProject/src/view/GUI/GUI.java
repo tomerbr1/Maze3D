@@ -541,7 +541,7 @@ public class GUI extends BasicWindow implements View {
 
 				setChanged();
 				notifyObservers(command);
-				if (colsCheck > 20 && floorsCheck > 50 && rowsCheck > 50)
+				if (floorsCheck > 20 &&  colsCheck > 50 && rowsCheck > 50)
 					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!\n\nNote: Maze size should be 20*50*50 at maximum.\n");
 				else
 					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!");
