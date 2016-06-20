@@ -10,11 +10,11 @@ import domains.State;
 import java.util.PriorityQueue;
 
 /**
- * This class implement the breath first search as a search algorithm
- * @author Tomer
+ * This class implement the breath first search (BFS) as a search algorithm
+ * @author Tomer Brami & Yotam Levy
  *
  */
-public class BreadthFirstSearch extends CommonSearcher implements Searcher {
+public class BFS extends CommonSearcher implements Searcher {
 
 	protected PriorityQueue<State> openList;
 	protected PriorityQueue<State> closedList;
@@ -22,7 +22,7 @@ public class BreadthFirstSearch extends CommonSearcher implements Searcher {
 	/**
 	 * The CTor of the breath first search creates a new open & close priority queue lists
 	 */
-	public BreadthFirstSearch() {
+	public BFS() {
 		openList = new PriorityQueue<State>();
 		closedList = new PriorityQueue<State>();
 	}

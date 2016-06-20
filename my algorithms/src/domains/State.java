@@ -2,7 +2,7 @@ package domains;
 
 /**
  * This class intended to represent a state can be done (like moving from a place to place) in a searchable problem.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class State implements Comparable<State>{

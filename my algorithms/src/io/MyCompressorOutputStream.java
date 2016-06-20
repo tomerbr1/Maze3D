@@ -5,7 +5,7 @@ import java.io.OutputStream;
 
 /**
  * compress given data and write it to the output stream source
- * @author Yotam Levy
+ * @author Tomer Brami & Yotam Levy
  */
 public class MyCompressorOutputStream extends OutputStream{
 
@@ -95,55 +95,3 @@ public class MyCompressorOutputStream extends OutputStream{
 		prevByte=0;
 	}
 }
-
-/**
- * Compressing given data and writing it into output stream source.
- * @author Tomer
- *
- **/
-
-/*
-public class MyCompressorOutputStream extends OutputStream {
-	
-	private OutputStream out;
-
-	public MyCompressorOutputStream(OutputStream out) {
-		this.out = out;
-	}
-	
-	@Override
-	public void write(int b) throws IOException {
-		out.write((byte)b);
-	}
-	
-	@Override
-	public void write(byte[] byteArr) throws IOException {
-		byte lastByte = byteArr[0];
-		int count = 1;
-		
-		for (int i = 1; i < byteArr.length; i++){
-			if (byteArr[i] == lastByte) {
-				count ++;
-			}
-			else {
-				while (count > 255) {
-					out.write(lastByte);
-					out.write(255);
-					count -= 255;
-				}
-				
-				out.write(lastByte);
-				out.write(count);
-				
-				lastByte = byteArr[i];
-				count = 1;
-			}
-		}
-		
-		//write the last byte
-		out.write(lastByte);
-		out.write(count);
-	}
-
-}
- */

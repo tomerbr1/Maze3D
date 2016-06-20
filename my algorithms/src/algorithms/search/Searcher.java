@@ -4,7 +4,7 @@ import domains.Searchable;
 
 /**
  * The interface to be implemented by search algorithms
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public interface Searcher {

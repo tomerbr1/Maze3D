@@ -20,10 +20,10 @@ package algorithms.search;
 
 /**
  * This Class extends the Breath First Search algorithm and make it a Best First Search.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
-public class BestFirstSearch extends BreadthFirstSearch implements Searcher {
+public class BestFirstSearch extends BFS implements Searcher {
 
 	/**
 	 * the costFlag means that the Best First Search will use the costs of each action to move.

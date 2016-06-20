@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * The Searchable interface intended to be implemented by a searchable problem
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  */
 public interface Searchable {
 	/**

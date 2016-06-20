@@ -1,10 +1,10 @@
 package maze.generators;
 
 /**
- * an enum to use for the maze directions.
- * @author Tomer
+ * an enum to represent the maze character's available directions from a specific position.
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public enum Direction {
-	LEFT, RIGHT, DOWN, UP, FORWARD, BACKWARD
+	UP, DOWN, LEFT, RIGHT, FORWARD, BACKWARD
 }

@@ -5,7 +5,7 @@ import maze.generators.Position;
 
 /**
  * This Class used for the adapter pattern, as class adapter for a maze state to the state class.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class MazeState extends State {

@@ -6,7 +6,7 @@ import domains.State;
 
 /**
  * The CommonSearcher class includes the common implemented method of all the search algorithms
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public abstract class CommonSearcher implements Searcher {

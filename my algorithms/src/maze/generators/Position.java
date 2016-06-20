@@ -1,14 +1,17 @@
 package maze.generators;
 
+import java.util.Random;
+
 /**
  * this class intended to represent a 3d position
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class Position {
 	private int x;
 	private int y;
 	private int z;
+	private static Random rand = new Random();
 	
 	/**
 	 * a CTor to the class, used to set a 3d position
@@ -56,6 +59,28 @@ public class Position {
 		this.z = z;
 	}
 
+	/**
+	 * Updates all the position's coordinates at once.
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void updateCell(int x, int y, int z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
+	/**
+	 * Returns a random position inside the current maze instance.
+	 * @param maze a maze instance
+	 * @return
+	 */	
+	public static Position getRandomPosition(Maze3d maze) {
+		return new Position(rand.nextInt(maze.getRows()), rand.nextInt(maze.getColumns()),
+				rand.nextInt(maze.getDepth()));
+	}
+	
 	/** this method overrides the object's toString in order to represent a position as string. */
 	@Override
 	public String toString(){

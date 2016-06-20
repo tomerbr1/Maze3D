@@ -5,7 +5,7 @@ import maze.generators.Direction;
 
 /**
  * This Class used for the adapter pattern, as class adapter for a maze action to the action class.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class MazeAction extends Action {

@@ -12,12 +12,12 @@ import algorithms.search.Solution;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 import maze.generators.Maze3d;
-import maze.generators.MyMaze3dGenerator;
+import maze.generators.Prim;
 
 /**
  * This class used to generate a specific 3d maze by one of the maze generators algorithms,
  * solve it by one of the search algorithms and print the maze and it's solution.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  */
 public class Demo {
 	
@@ -25,7 +25,7 @@ public class Demo {
 	 * This is the only method used in class, in order to run a program demo.
 	 */
 	public void run(){
-		MyMaze3dGenerator gen = new MyMaze3dGenerator();
+		Prim gen = new Prim();
 		Maze3d maze = gen.generate(7, 7, 7);
 		System.out.println("My Maze 3D:\n");
 		System.out.println(maze);
@@ -41,7 +41,7 @@ public class Demo {
 	}
 	
 	public void compressMaze() {
-		MyMaze3dGenerator gen = new MyMaze3dGenerator();
+		Prim gen = new Prim();
 		Maze3d maze = gen.generate(5, 5, 3);
 		System.out.println(maze.toString());
 		

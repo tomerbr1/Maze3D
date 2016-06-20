@@ -3,11 +3,14 @@ package boot;
 import algorithms.demo.Demo;
 import maze.generators.Maze3d;
 import maze.generators.Maze3dGenerator;
+import maze.generators.MyMaze3dGenerator;
 import maze.generators.Position;
+import maze.generators.Prim;
+import maze.generators.SimpleMaze3dGenerator;
 
 /**
  * This class intended to run a demo of the project.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class Run {
@@ -60,14 +63,16 @@ public class Run {
 	public static void main(String[] args) {
 
 		//exercise 2
-		Demo demo = new Demo();
-		demo.run();
-//		testMazeGenerator(new SimpleMaze3dGenerator());
-//		System.out.println("~~~END SIMPLE MAZE~~~");
-//		testMazeGenerator(new MyMaze3dGenerator());
-//		System.out.println("~~~END DFS~~~");
+		//Demo demo = new Demo();
+		//demo.run();
+		testMazeGenerator(new SimpleMaze3dGenerator());
+		System.out.println("~~~END SIMPLE MAZE~~~");
+		testMazeGenerator(new MyMaze3dGenerator());
+		System.out.println("~~~END DFS~~~");
+		testMazeGenerator(new Prim());
+		System.out.println("End PRIM");
 		//exercise 3
-		demo.compressMaze();
+		//demo.compressMaze();
 		
 
 	}

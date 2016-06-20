@@ -9,7 +9,7 @@ import domains.State;
 
 /** 
  * This class implement the depth search as a search algorithm  
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class DFS extends CommonSearcher {

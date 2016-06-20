@@ -6,7 +6,7 @@ import domains.State;
 
 /**
  * The solution class generate the solution to a searchable problem as a states array 
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class Solution {

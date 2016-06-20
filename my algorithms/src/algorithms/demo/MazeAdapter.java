@@ -13,7 +13,7 @@ import maze.generators.Position;
 /**
  * This class implements a searchable problem and adapt the Maze methods on it,
  * by the Adapter Pattern.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class MazeAdapter implements Searchable {
@@ -77,13 +77,13 @@ public class MazeAdapter implements Searchable {
 	 */
 	private Position getNextPosition(Position currPos, Direction dir) {
 		switch (dir) {
-		case RIGHT:
-			return new Position(currPos.getX() + 1, currPos.getY(), currPos.getZ());			
-		case LEFT:
-			return new Position(currPos.getX() - 1, currPos.getY(), currPos.getZ());	
-		case DOWN:
-			return new Position(currPos.getX(), currPos.getY() + 1, currPos.getZ());	
 		case UP:
+			return new Position(currPos.getX() + 1, currPos.getY(), currPos.getZ());			
+		case DOWN:
+			return new Position(currPos.getX() - 1, currPos.getY(), currPos.getZ());	
+		case RIGHT:
+			return new Position(currPos.getX(), currPos.getY() + 1, currPos.getZ());	
+		case LEFT:
 			return new Position(currPos.getX(), currPos.getY() - 1, currPos.getZ());
 		case FORWARD:
 			return new Position(currPos.getX(), currPos.getY(), currPos.getZ() + 1);	

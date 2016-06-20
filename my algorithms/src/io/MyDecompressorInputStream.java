@@ -3,6 +3,11 @@ package io;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Decompress a Maze from stream (text file) and input it to the game.
+ * @author Tomer Brami & Yotam Levy
+ *
+ */
 public class MyDecompressorInputStream extends InputStream {
 	protected InputStream in;
 	protected int currByte;

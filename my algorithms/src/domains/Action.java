@@ -2,7 +2,7 @@ package domains;
 
 /**
  * The action class represents every action and its cost that can be done from a state.
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class Action {

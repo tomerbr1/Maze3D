@@ -3,107 +3,78 @@ import java.util.*;
 
 /**
  * a simple maze 3d generator algorithm class
- * @author Tomer
+ * @author Tomer Brami & Yotam Levy
  *
  */
 public class SimpleMaze3dGenerator extends CommonMaze3dGenerator {
 
-	/**
-	 * @param maze a 3d int maze
-	 * @param rand a random generator
-	 */
-	private Maze3d maze;
-	private Random rand = new Random();
-	
+	Maze3d maze;
 	/**
 	 * the main method implemented to generate a maze by this generator
 	 */
 	@Override
-	public Maze3d generate(int cols, int rows, int depth) {
-		maze = new Maze3d(cols, rows, depth);
+	public Maze3d generate(int rows, int columns, int depth) {
+		maze = new Maze3d(rows, columns, depth);
+		Random rand = new Random();
+		int x, y, z;
 		
-		initMaze();
+		maze.fillWithWalls();
 		
-		maze.setStartPosition(choosePosition());
-		maze.setGoalPosition(choosePosition());	
-		
-		//Create path between the start/goal positions
-		createPath();
-		
-		return maze;
-	}
-	
-	/**
-	 * this method initializing maze by set all it's cells as wall
-	 */
-	private void initMaze(){
-		int[][][] m = maze.getMaze();
-		for (int z = 0; z < maze.getDepth(); z++) {
-			for (int y = 0; y < maze.getRows(); y++) {
-				for (int x = 0; x < maze.getColumns(); x++)
-					m[x][y][z] = Maze3d.WALL;
+		for(x=0; x < rows; x++){
+			for (y = 0; y < columns; y++) {
+				for(z=0; z < depth ; z++){
+					maze.setValueInPosition(new Position(x, y, z), rand.nextInt(2)); // randomly initializing the values inside the maze to zero or one 
+				}
 			}
 		}
-	}
-
-	/**
-	 * a method intended to return a random position inside the maze
-	 * @return a random position
-	 */
-	private Position choosePosition() {		
-		int x = rand.nextInt(maze.getColumns());
-		int y = rand.nextInt(maze.getRows());
-		int z = rand.nextInt(maze.getDepth());
 		
-		return (new Position(x, y, z));
-	}
+		//building path,in order to provide at least one path
+		x=0;
+		y=0;
+		z=0;
+		Direction direction;
+		
+		maze.setStartPosition(new Position(0,0,0));
+		
+		while ((x<rows) && (y<columns) && (z<depth) && (x>=0) && (y>=0) && (z>=0))
+		{
 	
-	/**
-	 * a simple method used to create a path from the maze start positionto the goal position
-	 */
-	private void createPath(){
-		int[][][]m = maze.getMaze();
-		int x = maze.getStartPosition().getX();
-		int y = maze.getStartPosition().getY();
-		int z = maze.getStartPosition().getZ();
+			maze.setHoleAt(x, y, z);
+			
+			direction=Direction.values()[rand.nextInt(Direction.values().length)];
+			
+			switch (direction) 
+			{
+			case UP:
+				x++;
+				break;
+			case RIGHT:
+				y++;
+				break;
+			case FORWARD:
+				z++;
+				break;
+			default:
+				x++;
+				break;
+			}
+			
+		}
+		//initializing the exit of the maze
+		if(x == rows)
+		{
+			maze.setGoalPosition(new Position(x-1, y, z));
+		}
+		else if(y==columns)
+		{
+			maze.setGoalPosition(new Position(x, y-1, z));
+		}
+		else if(z==depth)
+		{
+			maze.setGoalPosition(new Position(x, y, z-1));
+		}
 		
-		if (x < maze.getGoalPosition().getX()){
-			while (x < maze.getGoalPosition().getX()){
-				m[x][y][z] = Maze3d.FREE;
-				x++; }
-		}
-		else if (x > maze.getGoalPosition().getX()){
-			while (x > maze.getGoalPosition().getX()){
-				m[x][y][z] = Maze3d.FREE;
-				x--; }	
-		}
-		else if (x == maze.getGoalPosition().getX())
-			m[x][y][z] = Maze3d.FREE;
-		
-		if (y < maze.getGoalPosition().getY()){
-			while (y < maze.getGoalPosition().getY()){
-				m[x][y][z] = Maze3d.FREE;
-				y++; }
-		}
-		else if (y > maze.getGoalPosition().getY()){
-			while (y > maze.getGoalPosition().getY()){
-				m[x][y][z] = Maze3d.FREE;
-				y--; }	
-		}
-		else if (y == maze.getGoalPosition().getY())
-			m[x][y][z] = Maze3d.FREE;
-		
-		if (z < maze.getGoalPosition().getZ()){
-			while (z < maze.getGoalPosition().getZ()){
-				m[x][y][z] = Maze3d.FREE;
-				z++; }
-		}
-		else if (z > maze.getGoalPosition().getZ()){
-			while (z > maze.getGoalPosition().getZ()){
-				m[x][y][z] = Maze3d.FREE;
-				z--; }
-		}
-		else if (z == maze.getGoalPosition().getZ())
-			m[x][y][z] = Maze3d.FREE;
-	}
+		return maze;
+
+}
 }

@@ -4,7 +4,7 @@ import java.util.Random;
 
 /**
  * a 3d maze generator class
- * @author Tomer
+ * @author Tomer Brami
  *
  */
 public class MyMaze3dGenerator extends CommonMaze3dGenerator{
@@ -20,12 +20,12 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 	 * the main method implemented to generate a maze by this generator
 	 */
 	@Override
-	public Maze3d generate(int cols, int rows, int depth) {
-		if (cols >= 1 && rows >= 1 && depth >= 1)
+	public Maze3d generate(int rows, int cols, int depth) {
+		if (rows >= 1 && cols >= 1 && depth >= 1)
 		{
-		maze = new Maze3d(cols, rows, depth);
+		maze = new Maze3d(rows, cols, depth);
 		
-		initMaze();
+		maze.fillWithWalls();
 		
 		// Choose random start position			
 		maze.setStartPosition(choosePosition());
@@ -38,33 +38,19 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 			System.out.println("Numbers format exception!\n");
 			return null;
 	}
-	
-	/**
-	 * this method initializing maze by set all it's cells as wall
-	 */
-	private void initMaze(){
-		int[][][] m = maze.getMaze();
-		for (int z = 0; z < maze.getDepth(); z++) {
-			for (int y = 0; y < maze.getRows(); y++) {
-				for (int x = 0; x < maze.getColumns(); x++) {
-					m[x][y][z] = Maze3d.WALL;
-				}
-			}
-		}
-	}
 
 	/**
 	 * a method intended to return a random position inside the maze
 	 * @return a random position
 	 */
 	private Position choosePosition() {		
-		int x = rand.nextInt(maze.getColumns());
+		int x = rand.nextInt(maze.getRows());
 		while (x % 2 == 1)
-			x = rand.nextInt(maze.getColumns());
+			x = rand.nextInt(maze.getRows());
 		
-		int y = rand.nextInt(maze.getRows());
+		int y = rand.nextInt(maze.getColumns());
 		while (y % 2 == 1)
-			y = rand.nextInt(maze.getRows());
+			y = rand.nextInt(maze.getColumns());
 		
 		int z = rand.nextInt(maze.getDepth());
 		while (z % 2 == 1)
@@ -80,10 +66,10 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 	 */
 	private ArrayList<Direction> getPossibleDirections(Position pos) {
 		ArrayList<Direction> dirs = new ArrayList<Direction>();
-		int[][] []m = maze.getMaze();
+		int[][][]m = maze.getMaze();
 		
 		// Check up neighbor
-		if (pos.getX() + 2 < maze.getColumns() && m[pos.getX()+2][pos.getY()][pos.getZ()] == Maze3d.WALL)
+		if (pos.getX() + 2 < maze.getRows() && m[pos.getX()+2][pos.getY()][pos.getZ()] == Maze3d.WALL)
 			dirs.add(Direction.UP);
 		
 		// Check down neighbor
@@ -91,7 +77,7 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 			dirs.add(Direction.DOWN);
 
 		// Check right neighbor
-		if (pos.getY() + 2 < maze.getRows() && m[pos.getX()][pos.getY() + 2][pos.getZ()] == Maze3d.WALL)
+		if (pos.getY() + 2 < maze.getColumns() && m[pos.getX()][pos.getY() + 2][pos.getZ()] == Maze3d.WALL)
 			dirs.add(Direction.RIGHT);
 
 		// Check left neighbor
