@@ -536,7 +536,7 @@ public class GUI extends BasicWindow implements View {
 				command +=  n + ' ' + floorsText.getText() + ' ' + rowsText.getText() + ' ' + colsText.getText();
 				setChanged();
 				notifyObservers(command);
-				display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!\nUse the display button to play it.");
+				display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!");
 				generateMazeShell.close();
 				shell.setEnabled(true);
 				lblHelp.setText("\nTIP: Use arrow keys or\nPage Up\\Page Down");
