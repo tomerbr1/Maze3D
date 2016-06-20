@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 
 import algorithms.search.Solution;
+import domains.State;
 import maze.generators.Maze3d;
 import maze.generators.Position;
 
@@ -204,14 +205,16 @@ public class Maze3D extends MazeDisplayer {
 			@Override
 			public void run() {
 
+				String x, y, z;
 				if(i >= 0){
+					//memorial to good code
 //					System.out.println(solution.getStates().get(i));
 //					System.out.println(Integer.parseInt(solution.getStates().get(i).toString().substring(1,2)));
 //					System.out.println(Integer.parseInt(solution.getStates().get(i).toString().substring(3,4)));
 //					System.out.println(Integer.parseInt(solution.getStates().get(i).toString().substring(5,6)));
-					setCharacterPosition(Integer.parseInt(solution.getStates().get(i).toString().substring(1,2)),
-							Integer.parseInt(solution.getStates().get(i).toString().substring(3,4)),
-							Integer.parseInt(solution.getStates().get(i).toString().substring(5,6)));
+					setCharacterPosition(getIndexFromState(solution.getStates().get(i), "x"),
+							getIndexFromState(solution.getStates().get(i), "y"),
+							getIndexFromState(solution.getStates().get(i), "z"));
 					try {
 						Thread.sleep(400);
 					} catch (InterruptedException e) {
@@ -228,6 +231,33 @@ public class Maze3D extends MazeDisplayer {
 		};
 		timer.scheduleAtFixedRate(task, 0, 100);
 		timer.purge();
+	}
+	
+	public int getIndexFromState(State state, String charIndex){
+		String stateStr = state.toString();
+		
+		String x, y, z;
+		String[] splittedTmp = stateStr.split(",");
+		
+		if (charIndex.equals("x")){
+//			System.out.println(stateStr);
+//			System.out.println(splittedTmp[0].substring(1));
+			splittedTmp[0] = splittedTmp[0].substring(1);
+			return Integer.parseInt(splittedTmp[0]);
+		}
+		else if (charIndex.equals("y")){
+//			System.out.println(stateStr);
+//			System.out.println(splittedTmp[1]);
+			return Integer.parseInt(splittedTmp[1]);
+		}
+		else if (charIndex.equals("z")){
+//			System.out.println(stateStr);
+//			System.out.println(splittedTmp[2].substring(0, splittedTmp[2].length()-1));
+			
+			splittedTmp[2] = splittedTmp[2].substring(0, splittedTmp[2].length()-1);
+			return Integer.parseInt(splittedTmp[2]);
+		}
+		return (Integer) null;
 	}
 	
 	public Position getGoal() {

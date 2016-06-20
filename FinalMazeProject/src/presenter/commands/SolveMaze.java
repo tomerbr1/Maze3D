@@ -41,7 +41,7 @@ public class SolveMaze implements Command {
 		}else
 			if(view instanceof GUI){
 				MazeAdapter mAdapter = new MazeAdapter(maze);
-				BFS bfs = new BFS();
+				BFS bfs = new BFS(); 
 				Solution sol = bfs.search(mAdapter);
 				((GUI) view).setSolution(sol);
 			}

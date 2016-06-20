@@ -1,1 +1,1 @@
-java -classpath "Client.jar;my_algorithms.jar;swt/Linux32/swt_Linux32.jar" boot.Run
+java -classpath "MazeProject.jar;my_algorithms.jar;swt/Linux32/swt_Linux32.jar" boot.Run

@@ -244,11 +244,11 @@ public class GUI extends BasicWindow implements View {
 		lblHelp = new Label(buttonsComposite, SWT.NONE);
 		lblHelp.setFont(new Font(null, "Segoe UI Light", 10, SWT.NORMAL));
 		lblHelp.setText("TIP:\nUse the Generate or Load\nbuttons for playing.");
-		
+
 		lblFloor = new Label(buttonsComposite, SWT.BOLD);
 		lblFloor.setFont(new Font(null, "Segoe UI", 10, SWT.BOLD));
 		lblFloor.setText("");
-		
+
 		lblAvailablefloor = new Label(buttonsComposite, SWT.NORMAL);
 		lblAvailablefloor.setFont(new Font(null, "Segoe UI", 10, SWT.NORMAL));
 		lblAvailablefloor.setText("");
@@ -534,15 +534,22 @@ public class GUI extends BasicWindow implements View {
 			{
 				String command = "generate_maze_3d ";
 				n = nameText.getText();
-				command +=  n + ' ' + floorsText.getText() + ' ' + rowsText.getText() + ' ' + colsText.getText();
+				command +=  n + ' ' + colsText.getText() + ' ' + floorsText.getText() + ' ' + rowsText.getText();
+				int colsCheck = Integer.parseInt(colsText.getText());
+				int floorsCheck = Integer.parseInt(floorsText.getText());
+				int rowsCheck = Integer.parseInt(rowsText.getText());
+
 				setChanged();
 				notifyObservers(command);
-				display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!");
+				if (colsCheck > 20 && floorsCheck > 50 && rowsCheck > 50)
+					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!\n\nNote: Maze size should be 20*50*50 at maximum.\n");
+				else
+					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!");
 				generateMazeShell.close();
 				shell.setEnabled(true);
 				lblHelp.setText("\nTIP: Use arrow keys or\nPage Up\\Page Down");
 				displayMaze();
-				lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getColumns() + ".");
+				lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getRows() + ".");
 
 			}
 
@@ -580,7 +587,7 @@ public class GUI extends BasicWindow implements View {
 
 				@Override
 				public void keyReleased(KeyEvent arg0) {
-					lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getColumns() + ".");
+					lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getRows() + ".");
 					if (maze.getCharacterPosition().getX()+1 < maze3d.getColumns() && maze.getCharacterPosition().getX()-1 >= 0){
 
 						if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
