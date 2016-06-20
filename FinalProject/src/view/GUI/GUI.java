@@ -4,7 +4,6 @@ import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,15 +16,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -38,9 +34,7 @@ import org.eclipse.swt.widgets.Text;
 
 import algorithms.search.Solution;
 import maze.generators.Maze3d;
-import maze.generators.Position;
 import presenter.Properties;
-import presenter.PropertiesXMLCreator;
 import view.View;
 
 /**
@@ -63,17 +57,17 @@ public class GUI extends BasicWindow implements View {
 	MazeDisplayer maze;
 	Properties prop;
 	private MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-	private View view;
 	public int[][] mazeToPaint;
 	private Maze3d maze3d;
-	private KeyListener canvasKeyListener;
-	private Boolean keyListenerActivator = true;
 	MenuItem solve;
-	private Position characterPos;
 	String n;
 	private Solution solution;
 	private boolean isStartedGame;
 	String MazeFileSelectedName;
+
+	Label lblHelp;
+	Label lblFloor;
+	Label lblAvailablefloor;
 
 	final Color white = new Color(null, 255, 255, 255);
 	final Color cyan = new Color(null, 30, 144, 255);
@@ -135,9 +129,9 @@ public class GUI extends BasicWindow implements View {
 		helpItem.setMenu(helpMenu);
 
 		MenuItem solveItem = new MenuItem(helpMenu, SWT.NONE);
-		solveItem.setText("Solve the maze!");
-		MenuItem AboutItem = new MenuItem(helpMenu, SWT.NONE);
-		AboutItem.setText("About the game");
+		solveItem.setText("Solve the maze");
+		MenuItem aboutItem = new MenuItem(helpMenu, SWT.NONE);
+		aboutItem.setText("About the game");
 		shell.setMenuBar(menuBar);
 		//------ MENU BAR'S LISTENERS ------/
 
@@ -196,18 +190,43 @@ public class GUI extends BasicWindow implements View {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
+
+		saveItem.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String command = "save_maze " + n + " " + n + ".maz" ;
+				setChanged();
+				notifyObservers(command);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+
+		aboutItem.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				aboutGame();
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 		//a Composite to group all the buttons of the 3D Maze Shell in one column
-		Composite buttonsComposite = new Composite(shell, SWT.BORDER);
-		buttonsComposite.setLayout(new FillLayout(SWT.VERTICAL));
+		Composite buttonsComposite = new Composite(shell, SWT.NONE);
+		buttonsComposite.setLayout(new FillLayout(SWT.NONE));
 
 		//------ MAZE's BUTTONS & PAINT: INSTANCES -------
 
 		Button btnGenerate = new Button(buttonsComposite, SWT.PUSH);
 		btnGenerate.setText("Generate Maze");
 		//generateButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false, 1, 1));
-
-		Button btnRandomWalk = new Button(buttonsComposite, SWT.PUSH);
-		btnRandomWalk.setText("Random Walk");
 
 		Button btnSolve = new Button(buttonsComposite, SWT.PUSH);
 		btnSolve.setText("Solve Maze");
@@ -221,6 +240,17 @@ public class GUI extends BasicWindow implements View {
 		Button btnExit = new Button(buttonsComposite, SWT.PUSH);
 		btnExit.setText("Exit");
 
+		lblHelp = new Label(buttonsComposite, SWT.NONE);
+		lblHelp.setFont(new Font(null, "Segoe UI Light", 10, SWT.NORMAL));
+		lblHelp.setText("TIP:\nUse the Generate or Load\nbuttons for playing.");
+		
+		lblFloor = new Label(buttonsComposite, SWT.BOLD);
+		lblFloor.setFont(new Font(null, "Segoe UI", 10, SWT.BOLD));
+		lblFloor.setText("");
+		
+		lblAvailablefloor = new Label(buttonsComposite, SWT.NORMAL);
+		lblAvailablefloor.setFont(new Font(null, "Segoe UI", 10, SWT.NORMAL));
+		lblAvailablefloor.setText("");
 
 		//IMPORTANT: Maze paint instance injection into window		
 		maze = new Maze3D(shell, SWT.BORDER); //now when md's parent is shell, we know we have an instance of md in the shell window.
@@ -243,49 +273,6 @@ public class GUI extends BasicWindow implements View {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
-
-
-		/* "Random Walk" button
-		 * --------------------
-		 * makes the character random walking inside the maze.
-		 * We have to use display.syncExec to ask the original thread that draws the maze
-		 * to use redraw(), otherwise we'll get an invalid thread access error.
-		 */
-		btnRandomWalk.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (btnRandomWalk.getText().equals("Random Walk")){
-					if (n== null){
-						display("Please generate or load a maze first.\n");
-						return;
-					}
-					btnRandomWalk.setText("Pause Random");
-					timer=new Timer();
-					task=new TimerTask() {
-						@Override
-						public void run() {
-							display.syncExec(new Runnable() {
-								@Override
-								public void run() {
-									randomWalk(maze);
-								}
-							});			
-						}
-					};		
-					timer.scheduleAtFixedRate(task, 0, 100);
-				}
-				else if (btnRandomWalk.getText().equals("Pause Random")){
-					task.cancel();
-					timer.cancel();
-					btnRandomWalk.setText("Random Walk");
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-
 
 		//Exit button terminates the whole program.
 		btnExit.addSelectionListener(new SelectionListener() {
@@ -372,37 +359,6 @@ public class GUI extends BasicWindow implements View {
 	}
 
 
-	//Moving the character randomly to another free position inside the current MazeData.
-	protected void randomWalk(MazeDisplayer maze){
-		final int[] UP = { 0, -1, 0 };
-		final int[] DOWN = { 0, 1, 0 };
-		final int[] RIGHT = { 0, 0, 1 };
-		final int[] LEFT = { 0, 0 , -1 };
-		final int[] UPWARDS = { 1, 0, 0 };
-		final int[] DOWNWARDS = { -1, 0, 0 };
-
-		Random r=new Random();
-		boolean b1,b2, b3, b4;
-		b1=r.nextBoolean();
-		b2=r.nextBoolean();
-		b3=r.nextBoolean();
-		b4=r.nextBoolean();
-		if(b1&&b2 && b3&&b4)
-			maze.move(UP);
-		if(b1&&!b2 && b3&&!b4)
-			maze.move(DOWN);
-		if(!b1&&b2 && !b3&&b4)
-			maze.move(RIGHT);
-		if(!b1&&!b2 && !b3&&!b4)
-			maze.move(LEFT);
-		if(b1&&b2 && !b3&&!b4)
-			maze.move(UPWARDS);
-		if(!b1&&!b2 && b3&&b4)
-			maze.move(DOWNWARDS);
-		maze.redraw();
-	}
-
-
 	@Override
 	public void start() {
 		this.run();
@@ -423,7 +379,7 @@ public class GUI extends BasicWindow implements View {
 				shell.setEnabled(true);
 			}
 		});
-		shell.setEnabled(false);
+
 		//Generate Maze shell's parameters
 		generateMazeShell.setBackground(cyan);
 		GridLayout shellGridLayout = new GridLayout(2, false);
@@ -583,7 +539,9 @@ public class GUI extends BasicWindow implements View {
 				display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!\nUse the display button to play it.");
 				generateMazeShell.close();
 				shell.setEnabled(true);
+				lblHelp.setText("\nTIP: Use arrow keys or\nPage Up\\Page Down");
 				displayMaze();
+				lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getColumns() + ".");
 
 			}
 
@@ -602,57 +560,71 @@ public class GUI extends BasicWindow implements View {
 			isStartedGame = false;
 			return;
 		}
+		else{
+			String command = "display_maze " + n;
+			setChanged();
+			notifyObservers(command);
 
-		String command = "display_maze " + n;
-		setChanged();
-		notifyObservers(command);
+			mazeToPaint = maze3d.getCrossSectionByX(maze3d.getStartPosition().getX());
+			maze.setMazeData(mazeToPaint);
 
-		mazeToPaint = maze3d.getCrossSectionByX(maze3d.getStartPosition().getX());
-		maze.setMazeData(mazeToPaint);
-
-		maze.setCurrentMaze(maze3d);         
-		//maze.setCharacterPosition(maze3d.getStartPosition().getY(), maze3d.getStartPosition().getZ());
-		maze.redraw();
-		isStartedGame = true;
-		maze.forceFocus();
+			maze.setCurrentMaze(maze3d);         
+			//maze.setCharacterPosition(maze3d.getStartPosition().getY(), maze3d.getStartPosition().getZ());
+			maze.redraw();
+			isStartedGame = true;
+			maze.forceFocus();
 
 
-		maze.addKeyListener(new KeyListener() {
+			maze.addKeyListener(new KeyListener() {
 
-			@Override
-			public void keyReleased(KeyEvent arg0) {
+				@Override
+				public void keyReleased(KeyEvent arg0) {
+					lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getColumns() + ".");
+					if (maze.getCharacterPosition().getX()+1 < maze3d.getColumns() && maze.getCharacterPosition().getX()-1 >= 0){
 
-			}
+						if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
+							lblAvailablefloor.setText("You can go up");
+						else if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
+							lblAvailablefloor.setText("");
 
-			@Override
-			public void keyPressed(KeyEvent e) {
+						if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0)
+							lblAvailablefloor.setText("You can go up\\down");
 
-				switch (e.keyCode) {
-				case SWT.ARROW_LEFT:
-					maze.move(Maze3D.LEFT);
-					break;
-				case SWT.ARROW_RIGHT:
-					maze.move(Maze3D.RIGHT);
-					break;
-				case SWT.ARROW_UP:
-					maze.move(Maze3D.UP);
-					break;
-				case SWT.ARROW_DOWN:
-					maze.move(Maze3D.DOWN);
-					break;
-				case SWT.PAGE_UP:
-					maze.move(Maze3D.UPWARDS);
-					break;
-				case SWT.PAGE_DOWN:
-					maze.move(Maze3D.DOWNWARDS);
-					break;
-
+						else if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
+							lblAvailablefloor.setText("You can go down");
+					}
 				}
-				if(maze.getCharacterPosition().equals(maze3d.getGoalPosition())){
-					display("You Won!!!");
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+
+					switch (e.keyCode) {
+					case SWT.ARROW_LEFT:
+						maze.move(Maze3D.LEFT);
+						break;
+					case SWT.ARROW_RIGHT:
+						maze.move(Maze3D.RIGHT);
+						break;
+					case SWT.ARROW_UP:
+						maze.move(Maze3D.UP);
+						break;
+					case SWT.ARROW_DOWN:
+						maze.move(Maze3D.DOWN);
+						break;
+					case SWT.PAGE_UP:
+						maze.move(Maze3D.UPWARDS);
+						break;
+					case SWT.PAGE_DOWN:
+						maze.move(Maze3D.DOWNWARDS);
+						break;
+
+					}
+					if(maze.getCharacterPosition().equals(maze3d.getGoalPosition())){
+						display("You Won!!!");
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	private void loadMaze(){
@@ -691,34 +663,24 @@ public class GUI extends BasicWindow implements View {
 	private void solveMaze(){
 		if (n == null){
 			display("Please generate or load a maze first.\n");
+			return;
 		}
 		String command = "solve" + " " + n;
 		setChanged();
 		notifyObservers(command);
 		maze.solveTheMaze(solution);
-		display("Solving...");
+		display("Solving by " + prop.getSearchAlgorithm());
 	}
-	
+
 	private void quickSetup(){
-		shell.setEnabled(false);
-
-		Shell quickSetupShell = new Shell(shell, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
-
-		quickSetupShell.addDisposeListener(new DisposeListener() {
-
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				shell.setEnabled(true);
-			}
-		});
-
-		shell.setEnabled(false);
+		Shell quickSetupShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM | SWT.CLOSE | SWT.TITLE | SWT.MIN);
 
 		GridLayout gl_shell = new GridLayout(3, false);
 		gl_shell.marginBottom = 25;
 		gl_shell.marginWidth = 0;
 		gl_shell.marginHeight = 0;
 		quickSetupShell.setLayout(gl_shell);
+		quickSetupShell.setBackground(cyan);
 		//Icon and Title
 		Composite cmp_Logo = new Composite(quickSetupShell, SWT.NONE);
 		GridData gl_Cmp_Logo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
@@ -754,57 +716,7 @@ public class GUI extends BasicWindow implements View {
 		lbl_MarginLeft.setBackground(cyan);
 		lbl_MarginLeft.setText("         ");
 
-		//UI Section
-		Label lbl_Img_UI = new Label(quickSetupShell, SWT.NONE);
-		lbl_Img_UI.setBackground(cyan);
-		lbl_Img_UI.setImage(new Image(null, "resources/viewmode.png"));
-		GridData gd_Lbl_Img_UI = new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 2);
-		gd_Lbl_Img_UI.heightHint = 79;
-		gd_Lbl_Img_UI.widthHint = 83;
-		lbl_Img_UI.setLayoutData(gd_Lbl_Img_UI);
-
-		Label lbl_UI = new Label(quickSetupShell, SWT.READ_ONLY | SWT.BOTTOM);
-		lbl_UI.setForeground(white);
-		lbl_UI.setBackground(cyan);
-		GridData gd_Lbl_UI = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
-		gd_Lbl_UI.heightHint = 45;
-		gd_Lbl_UI.widthHint = 378;
-		lbl_UI.setLayoutData(gd_Lbl_UI);
-		lbl_UI.setFont(new Font(null, "Segoe UI Semibold", 18, SWT.NORMAL));
-		lbl_UI.setText(" Game Viewing Mode");
-		new Label(quickSetupShell, SWT.NONE);
-
-		//UI - Composite with buttons for GUI and CLI
-		Composite cmp_UI = new Composite(quickSetupShell, SWT.NONE);
-		cmp_UI.setBackground(cyan);
-		GridData gd_Cmp_UI = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_Cmp_UI.heightHint = 31;
-		gd_Cmp_UI.widthHint = 447;
-		cmp_UI.setLayoutData(gd_Cmp_UI);
-
-		Label lbl_UI_GUI = new Label(cmp_UI, SWT.NONE);
-		lbl_UI_GUI.setBackground(cyan);
-		lbl_UI_GUI.setForeground(white);
-		lbl_UI_GUI.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_UI_GUI.setBounds(35, -3, 111, 20);
-		lbl_UI_GUI.setText("GUI Window");
-
-		Label lbl_UI_CLI = new Label(cmp_UI, SWT.NONE);
-		lbl_UI_CLI.setForeground(white);
-		lbl_UI_CLI.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_UI_CLI.setText("CLI Console");
-		lbl_UI_CLI.setBackground(cyan);
-		lbl_UI_CLI.setBounds(195, -3, 102, 20);
-
-		Button btn_UI_GUI = new Button(cmp_UI, SWT.RADIO);
-		btn_UI_GUI.setSelection(true);
-		btn_UI_GUI.setBackground(cyan);
-		btn_UI_GUI.setBounds(10, 0, 23, 20);
-
-		Button btn_UI_CLI = new Button(cmp_UI, SWT.RADIO);
-		btn_UI_CLI.setBackground(cyan);
-		btn_UI_CLI.setBounds(170, 0, 16, 20);
-		new Label(quickSetupShell, SWT.NONE);
+		//UI Section - not in use here
 		new Label(quickSetupShell, SWT.NONE);
 
 		//Margin composite+label for better separate with the next section
@@ -932,8 +844,8 @@ public class GUI extends BasicWindow implements View {
 		lbl_Search_BFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
 		lbl_Search_BFS.setBackground(cyan);
 		lbl_Search_BFS.setBounds(195, -3, 77, 26);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
+		new Label(quickSetupShell, SWT.NONE);
+		new Label(quickSetupShell, SWT.NONE);
 
 		//Margin composite+label for better separate with the next section
 		Composite cmp_Space3 = new Composite(quickSetupShell, SWT.NONE);
@@ -941,7 +853,7 @@ public class GUI extends BasicWindow implements View {
 		gd_Cmp_Space3.heightHint = 24;
 		cmp_Space3.setLayoutData(gd_Cmp_Space3);
 		cmp_Space3.setBackground(cyan);
-		new Label(shell, SWT.NONE);
+		new Label(quickSetupShell, SWT.NONE);
 
 		//Save and apply button
 		Button startButton = new Button(quickSetupShell, SWT.NONE);
@@ -958,12 +870,7 @@ public class GUI extends BasicWindow implements View {
 				} catch (FileNotFoundException e1) {
 					display("Error", "File not found");
 				}
-				//Send the chosen UI to prop
-				if (btn_UI_GUI.getSelection())
-					prop.setUi("GUI");
-				else
-					prop.setUi("CLI");
-
+				prop.setUi("GUI");
 				//Send the chosen generate algorithm to prop
 				if (btn_Generate_DFS.getSelection())
 					prop.setGenerateAlgorithm("MyMaze3dGenerator");
@@ -979,6 +886,7 @@ public class GUI extends BasicWindow implements View {
 					prop.setSearchAlgorithm("BFS");
 
 				//Encode prop to XML and close procedure
+
 				encoder.writeObject(prop);
 				encoder.flush();
 				display("Saved successfully", "prop set and saved successfully.");
@@ -990,6 +898,12 @@ public class GUI extends BasicWindow implements View {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
+		quickSetupShell.pack();
+		quickSetupShell.open();
+	}
+
+	private void aboutGame(){
+		display("About", "Project Maze3D\n\nCoded and Designed by: Yotam Levy and Tomer Brami.\n\nThis project is part of Algorithmic Programming in Java course,\nThe College of Management, Israel\n\nJune 2016");
 	}
 
 

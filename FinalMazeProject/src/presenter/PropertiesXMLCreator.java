@@ -186,13 +186,13 @@ public class PropertiesXMLCreator extends BasicWindow {
 		cmp_Generate.setBackground(cyan);
 
 		Button btn_Generate_DFS = new Button(cmp_Generate, SWT.RADIO);
-		btn_Generate_DFS.setSelection(true);
 		btn_Generate_DFS.setBackground(cyan);
-		btn_Generate_DFS.setBounds(10, 0, 16, 20);
+		btn_Generate_DFS.setBounds(110, 0, 16, 20);
 
 		Button btn_Generate_Prim = new Button(cmp_Generate, SWT.RADIO);
+		btn_Generate_Prim.setSelection(true);
 		btn_Generate_Prim.setBackground(cyan);
-		btn_Generate_Prim.setBounds(110, 0, 16, 20);
+		btn_Generate_Prim.setBounds(10, 0, 16, 20);
 		
 		Button btn_Generate_Simple = new Button(cmp_Generate, SWT.RADIO);
 		btn_Generate_Simple.setBackground(cyan);
@@ -203,14 +203,14 @@ public class PropertiesXMLCreator extends BasicWindow {
 		lbl_Generate_DFS.setForeground(white);
 		lbl_Generate_DFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
 		lbl_Generate_DFS.setBackground(cyan);
-		lbl_Generate_DFS.setBounds(32, -3, 65, 23);
+		lbl_Generate_DFS.setBounds(132, -3, 65, 23);
 
 		Label lbl_Generate_Prim = new Label(cmp_Generate, SWT.NONE);
 		lbl_Generate_Prim.setText("Prim");
 		lbl_Generate_Prim.setForeground(white);
 		lbl_Generate_Prim.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
 		lbl_Generate_Prim.setBackground(cyan);
-		lbl_Generate_Prim.setBounds(132, -3, 65, 23);
+		lbl_Generate_Prim.setBounds(32, -3, 65, 23);
 		
 		Label lbl_Generate_Simple = new Label(cmp_Generate, SWT.NONE);
 		lbl_Generate_Simple.setText("Simple");

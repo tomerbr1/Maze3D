@@ -432,7 +432,7 @@ public class MyModel extends CommonModel implements Model {
 		if (!mazes.containsKey(name)) 
 		{
 			setChanged();
-			notifyObservers("The maze" + name + "does not exists\n");
+			notifyObservers("The maze " + name + " does not exists\n");
 			return;
 		}
 		Maze3d maze = mazes.get(name);

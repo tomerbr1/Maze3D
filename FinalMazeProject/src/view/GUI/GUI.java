@@ -69,6 +69,7 @@ public class GUI extends BasicWindow implements View {
 	Label lblHelp;
 	Label lblFloor;
 	Label lblAvailablefloor;
+	String command;
 
 	final Color white = new Color(null, 255, 255, 255);
 	final Color cyan = new Color(null, 30, 144, 255);
@@ -229,6 +230,9 @@ public class GUI extends BasicWindow implements View {
 		btnGenerate.setText("Generate Maze");
 		//generateButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false, 1, 1));
 
+		Button btnDisplay = new Button(buttonsComposite, SWT.PUSH);
+		btnDisplay.setText("Display Maze");
+
 		Button btnSolve = new Button(buttonsComposite, SWT.PUSH);
 		btnSolve.setText("Solve Maze");
 
@@ -322,6 +326,21 @@ public class GUI extends BasicWindow implements View {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});	
+
+		btnDisplay.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				displayMaze();
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 
@@ -532,389 +551,392 @@ public class GUI extends BasicWindow implements View {
 			@Override
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				String command = "generate_maze_3d ";
+				command = "generate_maze_3d ";
 				n = nameText.getText();
 				command +=  n + ' ' + colsText.getText() + ' ' + floorsText.getText() + ' ' + rowsText.getText();
 				int colsCheck = Integer.parseInt(colsText.getText());
 				int floorsCheck = Integer.parseInt(floorsText.getText());
 				int rowsCheck = Integer.parseInt(rowsText.getText());
 
+				if (floorsCheck > 20 &&  colsCheck > 20 && rowsCheck > 20){
+					display("Maze parameters should be maximum than 20.\n");
+					generateMazeShell.close();
+					shell.setEnabled(true);
+				}
+				else
+				{
+					setChanged();
+					notifyObservers(command);
+					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!");
+					generateMazeShell.close();
+					shell.setEnabled(true);
+					lblHelp.setText("\nTIP: Use arrow keys or\nPage Up\\Page Down");
+				}
+			}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+				generateMazeShell.pack();
+				generateMazeShell.open();
+
+			}
+
+			private void displayMaze(){
+				if (n == null)
+				{
+					display("You must generate or load a maze first.\n\nIf you've generated a maze with high parameters, wait a few seconds and try again.");
+					isStartedGame = false;
+					return;
+				}
+				else{
+					String command = "display_maze " + n;
+					setChanged();
+					notifyObservers(command);
+
+					mazeToPaint = maze3d.getCrossSectionByX(maze3d.getStartPosition().getX());
+					maze.setMazeData(mazeToPaint);
+
+					maze.setCurrentMaze(maze3d);         
+					//maze.setCharacterPosition(maze3d.getStartPosition().getY(), maze3d.getStartPosition().getZ());
+					maze.redraw();
+					isStartedGame = true;
+					lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getRows() + ".");
+					maze.forceFocus();
+
+
+					maze.addKeyListener(new KeyListener() {
+
+						@Override
+						public void keyReleased(KeyEvent arg0) {
+							lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getRows() + ".");
+							if (maze.getCharacterPosition().getX()+1 < maze3d.getColumns() && maze.getCharacterPosition().getX()-1 >= 0){
+
+								if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
+									lblAvailablefloor.setText("You can go up");
+								else if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
+									lblAvailablefloor.setText("");
+
+								if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0)
+									lblAvailablefloor.setText("You can go up\\down");
+
+								else if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
+									lblAvailablefloor.setText("You can go down");
+							}
+						}
+
+						@Override
+						public void keyPressed(KeyEvent e) {
+
+							switch (e.keyCode) {
+							case SWT.ARROW_LEFT:
+								maze.move(Maze3D.LEFT);
+								break;
+							case SWT.ARROW_RIGHT:
+								maze.move(Maze3D.RIGHT);
+								break;
+							case SWT.ARROW_UP:
+								maze.move(Maze3D.UP);
+								break;
+							case SWT.ARROW_DOWN:
+								maze.move(Maze3D.DOWN);
+								break;
+							case SWT.PAGE_UP:
+								maze.move(Maze3D.UPWARDS);
+								break;
+							case SWT.PAGE_DOWN:
+								maze.move(Maze3D.DOWNWARDS);
+								break;
+
+							}
+							if(maze.getCharacterPosition().equals(maze3d.getGoalPosition())){
+								display("You Won!!!");
+							}
+						}
+					});
+				}
+			}
+
+			private void loadMaze(){
+				FileDialog fd = new FileDialog(shell);
+				fd.setText("Load Maze");
+				fd.setFilterPath("files");
+				String [] filterExt = {"*.maz"};
+				fd.setFilterExtensions(filterExt);
+				String fileSelected = fd.open();
+				if (fileSelected == null) 
+				{
+					display("No file selected.\n");
+					return;
+				}
+
+				String fileNameWithMAZ = fd.getFileName();
+				String tmpToMaze[] = fileNameWithMAZ.split(".maz");
+				MazeFileSelectedName = tmpToMaze[0];
+
+				System.out.println(MazeFileSelectedName);
+				System.out.println(fileNameWithMAZ);
+				setChanged();
+				String command = "load_maze " + fileNameWithMAZ + " " + MazeFileSelectedName;
+				System.out.println(command);
 				setChanged();
 				notifyObservers(command);
-				if (floorsCheck > 20 &&  colsCheck > 50 && rowsCheck > 50)
-					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!\n\nNote: Maze size should be 20*50*50 at maximum.\n");
-				else
-					display("Maze " + n + " is created succesfully by " + prop.getGenerateAlgorithm() + "!");
-				generateMazeShell.close();
-				shell.setEnabled(true);
-				lblHelp.setText("\nTIP: Use arrow keys or\nPage Up\\Page Down");
+				n = MazeFileSelectedName;
 				displayMaze();
-				lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getRows() + ".");
-
 			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {}
-		});
-		generateMazeShell.pack();
-		generateMazeShell.open();
-
-	}
-
-	private void displayMaze(){
-		if (n == null)
-		{
-			display("You must generate or load a maze first.");
-			isStartedGame = false;
-			return;
-		}
-		else{
-			String command = "display_maze " + n;
-			setChanged();
-			notifyObservers(command);
-
-			mazeToPaint = maze3d.getCrossSectionByX(maze3d.getStartPosition().getX());
-			maze.setMazeData(mazeToPaint);
-
-			maze.setCurrentMaze(maze3d);         
-			//maze.setCharacterPosition(maze3d.getStartPosition().getY(), maze3d.getStartPosition().getZ());
-			maze.redraw();
-			isStartedGame = true;
-			maze.forceFocus();
-
-
-			maze.addKeyListener(new KeyListener() {
-
-				@Override
-				public void keyReleased(KeyEvent arg0) {
-					lblFloor.setText("\nYou are at floor " + maze.getCharacterPosition().getX() + " of " + maze3d.getRows() + ".");
-					if (maze.getCharacterPosition().getX()+1 < maze3d.getColumns() && maze.getCharacterPosition().getX()-1 >= 0){
-
-						if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
-							lblAvailablefloor.setText("You can go up");
-						else if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
-							lblAvailablefloor.setText("");
-
-						if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0)
-							lblAvailablefloor.setText("You can go up\\down");
-
-						else if (maze3d.getPositionValueInts(maze.getCharacterPosition().getX()-1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 0 && maze3d.getPositionValueInts(maze.getCharacterPosition().getX()+1, maze.getCharacterPosition().getY(), maze.getCharacterPosition().getZ()) == 1)
-							lblAvailablefloor.setText("You can go down");
-					}
-				}
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-
-					switch (e.keyCode) {
-					case SWT.ARROW_LEFT:
-						maze.move(Maze3D.LEFT);
-						break;
-					case SWT.ARROW_RIGHT:
-						maze.move(Maze3D.RIGHT);
-						break;
-					case SWT.ARROW_UP:
-						maze.move(Maze3D.UP);
-						break;
-					case SWT.ARROW_DOWN:
-						maze.move(Maze3D.DOWN);
-						break;
-					case SWT.PAGE_UP:
-						maze.move(Maze3D.UPWARDS);
-						break;
-					case SWT.PAGE_DOWN:
-						maze.move(Maze3D.DOWNWARDS);
-						break;
-
-					}
-					if(maze.getCharacterPosition().equals(maze3d.getGoalPosition())){
-						display("You Won!!!");
-					}
-				}
-			});
-		}
-	}
-
-	private void loadMaze(){
-		FileDialog fd = new FileDialog(shell);
-		fd.setText("Load Maze");
-		fd.setFilterPath("files");
-		String [] filterExt = {"*.maz"};
-		fd.setFilterExtensions(filterExt);
-		String fileSelected = fd.open();
-		if (fileSelected == null) 
-		{
-			display("No file selected.\n");
-			return;
-		}
-
-		String fileNameWithMAZ = fd.getFileName();
-		String tmpToMaze[] = fileNameWithMAZ.split(".maz");
-		MazeFileSelectedName = tmpToMaze[0];
-
-		System.out.println(MazeFileSelectedName);
-		System.out.println(fileNameWithMAZ);
-		setChanged();
-		String command = "load_maze " + fileNameWithMAZ + " " + MazeFileSelectedName;
-		System.out.println(command);
-		setChanged();
-		notifyObservers(command);
-		n = MazeFileSelectedName;
-		displayMaze();
-	}
-
-	private void exitGame(){
-		String command = "exit";
-		setChanged();
-		notifyObservers(command);
-		shell.dispose();
-	}
-
-	private void solveMaze(){
-		if (n == null){
-			display("Please generate or load a maze first.\n");
-			return;
-		}
-		String command = "solve" + " " + n;
-		setChanged();
-		notifyObservers(command);
-		maze.solveTheMaze(solution);
-		display("Solving by " + prop.getSearchAlgorithm());
-	}
-
-	private void quickSetup(){
-		Shell quickSetupShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM | SWT.CLOSE | SWT.TITLE | SWT.MIN);
-
-		GridLayout gl_shell = new GridLayout(3, false);
-		gl_shell.marginBottom = 25;
-		gl_shell.marginWidth = 0;
-		gl_shell.marginHeight = 0;
-		quickSetupShell.setLayout(gl_shell);
-		quickSetupShell.setBackground(cyan);
-		//Icon and Title
-		Composite cmp_Logo = new Composite(quickSetupShell, SWT.NONE);
-		GridData gl_Cmp_Logo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
-		gl_Cmp_Logo.heightHint = 95;
-		gl_Cmp_Logo.widthHint = 536;
-		cmp_Logo.setLayoutData(gl_Cmp_Logo);
-		cmp_Logo.setBackground(black);
-
-		Label lbl_Img_TitleIcon = new Label(cmp_Logo, SWT.NONE);
-		lbl_Img_TitleIcon.setBounds(10, 0, 90, 95);
-		lbl_Img_TitleIcon.setBackground(black);
-		lbl_Img_TitleIcon.setImage(new Image(display, "resources/icon.png"));
-
-		Label lbl_Img_TitleLogo = new Label(cmp_Logo, SWT.CENTER);
-		lbl_Img_TitleLogo.setImage(new Image(display, "resources/logo.png"));
-		lbl_Img_TitleLogo.setBackground(black);
-		lbl_Img_TitleLogo.setBounds(106, 0, 412, 95);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Quick Setup title
-		Label lbl_QuickSetup = new Label(quickSetupShell, SWT.NONE);
-		GridData gd_Lbl_QuickSetup = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-		gd_Lbl_QuickSetup.widthHint = 216;
-		lbl_QuickSetup.setLayoutData(gd_Lbl_QuickSetup);
-		lbl_QuickSetup.setBackground(cyan);
-		lbl_QuickSetup.setForeground(white);
-		lbl_QuickSetup.setFont(new Font(null, "Segoe UI Light", 24, SWT.NORMAL));
-		lbl_QuickSetup.setText("Quick Setup");
-
-		//Add margin to the left
-		Label lbl_MarginLeft = new Label(quickSetupShell, SWT.NONE);
-		lbl_MarginLeft.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 1));
-		lbl_MarginLeft.setBackground(cyan);
-		lbl_MarginLeft.setText("         ");
-
-		//UI Section - not in use here
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Margin composite+label for better separate with the next section
-		Composite cmp_Margin = new Composite(quickSetupShell, SWT.NONE);
-		cmp_Margin.setBackground(cyan);
-		GridData gd_MarginComposite = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_MarginComposite.heightHint = 22;
-		cmp_Margin.setLayoutData(gd_MarginComposite);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Maze Generator Algorithm Section
-		Label lbl_Img_Generate = new Label(quickSetupShell, SWT.NONE);
-		lbl_Img_Generate.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 2));
-		lbl_Img_Generate.setImage(new Image(null, "resources/generate.png"));
-		lbl_Img_Generate.setBackground(cyan);
-
-		Label lbl_Generate = new Label(quickSetupShell, SWT.READ_ONLY | SWT.BOTTOM);
-		lbl_Generate.setBackground(cyan);
-		lbl_Generate.setForeground(white);
-		GridData gd_Lbl_Generate = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
-		gd_Lbl_Generate.widthHint = 403;
-		gd_Lbl_Generate.heightHint = 47;
-		lbl_Generate.setLayoutData(gd_Lbl_Generate);
-		lbl_Generate.setFont(new Font(null, "Segoe UI Semibold", 18, SWT.NORMAL));
-		lbl_Generate.setText(" Maze Generator Algorithm            ");
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Generator Section - Composite with buttons for DFS and SimpleMazeGenerator
-		Composite cmp_Generate = new Composite(quickSetupShell, SWT.NONE);
-		GridData gd_Cmp_Generate = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_Cmp_Generate.heightHint = 29;
-		cmp_Generate.setLayoutData(gd_Cmp_Generate);
-		cmp_Generate.setBackground(cyan);
-
-		Button btn_Generate_DFS = new Button(cmp_Generate, SWT.RADIO);
-		btn_Generate_DFS.setSelection(true);
-		btn_Generate_DFS.setBackground(cyan);
-		btn_Generate_DFS.setBounds(10, 0, 16, 20);
-
-		Button btn_Generate_Prim = new Button(cmp_Generate, SWT.RADIO);
-		btn_Generate_Prim.setBackground(cyan);
-		btn_Generate_Prim.setBounds(110, 0, 16, 20);
-
-		Button btn_Generate_Simple = new Button(cmp_Generate, SWT.RADIO);
-		btn_Generate_Simple.setBackground(cyan);
-		btn_Generate_Simple.setBounds(225, 0, 16, 20);
-
-		Label lbl_Generate_DFS = new Label(cmp_Generate, SWT.NONE);
-		lbl_Generate_DFS.setText("DFS");
-		lbl_Generate_DFS.setForeground(white);
-		lbl_Generate_DFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_Generate_DFS.setBackground(cyan);
-		lbl_Generate_DFS.setBounds(32, -3, 65, 23);
-
-		Label lbl_Generate_Prim = new Label(cmp_Generate, SWT.NONE);
-		lbl_Generate_Prim.setText("Prim");
-		lbl_Generate_Prim.setForeground(white);
-		lbl_Generate_Prim.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_Generate_Prim.setBackground(cyan);
-		lbl_Generate_Prim.setBounds(132, -3, 65, 23);
-
-		Label lbl_Generate_Simple = new Label(cmp_Generate, SWT.NONE);
-		lbl_Generate_Simple.setText("Simple");
-		lbl_Generate_Simple.setForeground(white);
-		lbl_Generate_Simple.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_Generate_Simple.setBackground(cyan);
-		lbl_Generate_Simple.setBounds(250, -3, 77, 26);
-
-		new Label(quickSetupShell, SWT.NONE);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Margin composite+label for better separate with the next section
-		Composite cmp_Space2 = new Composite(quickSetupShell, SWT.NONE);
-		GridData gd_Cmp_Space2 = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_Cmp_Space2.heightHint = 22;
-		cmp_Space2.setLayoutData(gd_Cmp_Space2);
-		cmp_Space2.setBackground(cyan);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Maze Search Algorithm Section
-		Label lbl_Img_Searcher = new Label(quickSetupShell, SWT.NONE);
-		GridData gd_Lbl_Img_Searcher = new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 2);
-		gd_Lbl_Img_Searcher.heightHint = 70;
-		lbl_Img_Searcher.setLayoutData(gd_Lbl_Img_Searcher);
-		lbl_Img_Searcher.setImage(new Image(null, "resources/searcher.png"));
-		lbl_Img_Searcher.setBackground(cyan);
-
-		Label lbl_Search = new Label(quickSetupShell, SWT.READ_ONLY | SWT.BOTTOM);
-		lbl_Search.setForeground(white);
-		lbl_Search.setBackground(cyan);
-		GridData gd_Lbl_Search = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
-		gd_Lbl_Search.heightHint = 48;
-		lbl_Search.setLayoutData(gd_Lbl_Search);
-		lbl_Search.setFont(new Font(null, "Segoe UI Semibold", 18, SWT.NORMAL));
-		lbl_Search.setText(" Maze Search Algorithm");
-		lbl_Search.setAlignment(SWT.CENTER);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Searcher Section - Composite with buttons for DFS and BFS
-		Composite cmp_Search = new Composite(quickSetupShell, SWT.NONE);
-		GridData gd_Cmp_Search = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_Cmp_Search.heightHint = 32;
-		cmp_Search.setLayoutData(gd_Cmp_Search);
-		cmp_Search.setBackground(cyan);
-
-		Button btn_Search_DFS = new Button(cmp_Search, SWT.RADIO);
-		btn_Search_DFS.setSelection(true);
-		btn_Search_DFS.setBackground(cyan);
-		btn_Search_DFS.setBounds(10, 0, 16, 20);
-
-		Button btn_Search_BFS = new Button(cmp_Search, SWT.RADIO);
-		btn_Search_BFS.setBackground(cyan);
-		btn_Search_BFS.setBounds(170, 0, 16, 20);
-
-		Label lbl_Search_DFS = new Label(cmp_Search, SWT.NONE);
-		lbl_Search_DFS.setText("DFS");
-		lbl_Search_DFS.setForeground(white);
-		lbl_Search_DFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_Search_DFS.setBackground(cyan);
-		lbl_Search_DFS.setBounds(32, -3, 55, 23);
-
-		Label lbl_Search_BFS = new Label(cmp_Search, SWT.NONE);
-		lbl_Search_BFS.setText("BFS");
-		lbl_Search_BFS.setForeground(white);
-		lbl_Search_BFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
-		lbl_Search_BFS.setBackground(cyan);
-		lbl_Search_BFS.setBounds(195, -3, 77, 26);
-		new Label(quickSetupShell, SWT.NONE);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Margin composite+label for better separate with the next section
-		Composite cmp_Space3 = new Composite(quickSetupShell, SWT.NONE);
-		GridData gd_Cmp_Space3 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_Cmp_Space3.heightHint = 24;
-		cmp_Space3.setLayoutData(gd_Cmp_Space3);
-		cmp_Space3.setBackground(cyan);
-		new Label(quickSetupShell, SWT.NONE);
-
-		//Save and apply button
-		Button startButton = new Button(quickSetupShell, SWT.NONE);
-		startButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
-		startButton.setText("Save and Apply");
-
-		startButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				XMLEncoder encoder = null;
-				try {
-					encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Properites.xml")));
-				} catch (FileNotFoundException e1) {
-					display("Error", "File not found");
-				}
-				prop.setUi("GUI");
-				//Send the chosen generate algorithm to prop
-				if (btn_Generate_DFS.getSelection())
-					prop.setGenerateAlgorithm("MyMaze3dGenerator");
-				else if (btn_Generate_Prim.getSelection())
-					prop.setGenerateAlgorithm("Prim");
-				else if (btn_Generate_Simple.getSelection())
-					prop.setGenerateAlgorithm("SimpleMaze3dGenerator");
-
-				//Send the chosen search algorithm to prop
-				if (btn_Search_DFS.getSelection())
-					prop.setSearchAlgorithm("DFS");
-				else
-					prop.setSearchAlgorithm("BFS");
-
-				//Encode prop to XML and close procedure
-
-				encoder.writeObject(prop);
-				encoder.flush();
-				display("Saved successfully", "prop set and saved successfully.");
-				encoder.close();
-				quickSetupShell.close();
-				shell.setEnabled(true);
+			private void exitGame(){
+				String command = "exit";
+				setChanged();
+				notifyObservers(command);
+				shell.dispose();
 			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-		quickSetupShell.pack();
-		quickSetupShell.open();
-	}
+			private void solveMaze(){
+				if (n == null){
+					display("Please generate or load a maze first.\n");
+					return;
+				}
+				String command = "solve" + " " + n;
+				setChanged();
+				notifyObservers(command);
+				maze.solveTheMaze(solution);
+				display("Solving by " + prop.getSearchAlgorithm());
+			}
 
-	private void aboutGame(){
-		display("About", "Project Maze3D\n\nCoded and Designed by: Yotam Levy and Tomer Brami.\n\nThis project is part of Algorithmic Programming in Java course,\nThe College of Management, Israel\n\nJune 2016");
-	}
+			private void quickSetup(){
+				Shell quickSetupShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM | SWT.CLOSE | SWT.TITLE | SWT.MIN);
+
+				GridLayout gl_shell = new GridLayout(3, false);
+				gl_shell.marginBottom = 25;
+				gl_shell.marginWidth = 0;
+				gl_shell.marginHeight = 0;
+				quickSetupShell.setLayout(gl_shell);
+				quickSetupShell.setBackground(cyan);
+				//Icon and Title
+				Composite cmp_Logo = new Composite(quickSetupShell, SWT.NONE);
+				GridData gl_Cmp_Logo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
+				gl_Cmp_Logo.heightHint = 95;
+				gl_Cmp_Logo.widthHint = 536;
+				cmp_Logo.setLayoutData(gl_Cmp_Logo);
+				cmp_Logo.setBackground(black);
+
+				Label lbl_Img_TitleIcon = new Label(cmp_Logo, SWT.NONE);
+				lbl_Img_TitleIcon.setBounds(10, 0, 90, 95);
+				lbl_Img_TitleIcon.setBackground(black);
+				lbl_Img_TitleIcon.setImage(new Image(display, "resources/icon.png"));
+
+				Label lbl_Img_TitleLogo = new Label(cmp_Logo, SWT.CENTER);
+				lbl_Img_TitleLogo.setImage(new Image(display, "resources/logo.png"));
+				lbl_Img_TitleLogo.setBackground(black);
+				lbl_Img_TitleLogo.setBounds(106, 0, 412, 95);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Quick Setup title
+				Label lbl_QuickSetup = new Label(quickSetupShell, SWT.NONE);
+				GridData gd_Lbl_QuickSetup = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+				gd_Lbl_QuickSetup.widthHint = 216;
+				lbl_QuickSetup.setLayoutData(gd_Lbl_QuickSetup);
+				lbl_QuickSetup.setBackground(cyan);
+				lbl_QuickSetup.setForeground(white);
+				lbl_QuickSetup.setFont(new Font(null, "Segoe UI Light", 24, SWT.NORMAL));
+				lbl_QuickSetup.setText("Quick Setup");
+
+				//Add margin to the left
+				Label lbl_MarginLeft = new Label(quickSetupShell, SWT.NONE);
+				lbl_MarginLeft.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 1));
+				lbl_MarginLeft.setBackground(cyan);
+				lbl_MarginLeft.setText("         ");
+
+				//UI Section - not in use here
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Margin composite+label for better separate with the next section
+				Composite cmp_Margin = new Composite(quickSetupShell, SWT.NONE);
+				cmp_Margin.setBackground(cyan);
+				GridData gd_MarginComposite = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+				gd_MarginComposite.heightHint = 22;
+				cmp_Margin.setLayoutData(gd_MarginComposite);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Maze Generator Algorithm Section
+				Label lbl_Img_Generate = new Label(quickSetupShell, SWT.NONE);
+				lbl_Img_Generate.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 2));
+				lbl_Img_Generate.setImage(new Image(null, "resources/generate.png"));
+				lbl_Img_Generate.setBackground(cyan);
+
+				Label lbl_Generate = new Label(quickSetupShell, SWT.READ_ONLY | SWT.BOTTOM);
+				lbl_Generate.setBackground(cyan);
+				lbl_Generate.setForeground(white);
+				GridData gd_Lbl_Generate = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
+				gd_Lbl_Generate.widthHint = 403;
+				gd_Lbl_Generate.heightHint = 47;
+				lbl_Generate.setLayoutData(gd_Lbl_Generate);
+				lbl_Generate.setFont(new Font(null, "Segoe UI Semibold", 18, SWT.NORMAL));
+				lbl_Generate.setText(" Maze Generator Algorithm            ");
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Generator Section - Composite with buttons for DFS and SimpleMazeGenerator
+				Composite cmp_Generate = new Composite(quickSetupShell, SWT.NONE);
+				GridData gd_Cmp_Generate = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+				gd_Cmp_Generate.heightHint = 29;
+				cmp_Generate.setLayoutData(gd_Cmp_Generate);
+				cmp_Generate.setBackground(cyan);
+
+				Button btn_Generate_DFS = new Button(cmp_Generate, SWT.RADIO);
+				btn_Generate_DFS.setSelection(true);
+				btn_Generate_DFS.setBackground(cyan);
+				btn_Generate_DFS.setBounds(10, 0, 16, 20);
+
+				Button btn_Generate_Prim = new Button(cmp_Generate, SWT.RADIO);
+				btn_Generate_Prim.setBackground(cyan);
+				btn_Generate_Prim.setBounds(110, 0, 16, 20);
+
+				Button btn_Generate_Simple = new Button(cmp_Generate, SWT.RADIO);
+				btn_Generate_Simple.setBackground(cyan);
+				btn_Generate_Simple.setBounds(225, 0, 16, 20);
+
+				Label lbl_Generate_DFS = new Label(cmp_Generate, SWT.NONE);
+				lbl_Generate_DFS.setText("DFS");
+				lbl_Generate_DFS.setForeground(white);
+				lbl_Generate_DFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
+				lbl_Generate_DFS.setBackground(cyan);
+				lbl_Generate_DFS.setBounds(32, -3, 65, 23);
+
+				Label lbl_Generate_Prim = new Label(cmp_Generate, SWT.NONE);
+				lbl_Generate_Prim.setText("Prim");
+				lbl_Generate_Prim.setForeground(white);
+				lbl_Generate_Prim.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
+				lbl_Generate_Prim.setBackground(cyan);
+				lbl_Generate_Prim.setBounds(132, -3, 65, 23);
+
+				Label lbl_Generate_Simple = new Label(cmp_Generate, SWT.NONE);
+				lbl_Generate_Simple.setText("Simple");
+				lbl_Generate_Simple.setForeground(white);
+				lbl_Generate_Simple.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
+				lbl_Generate_Simple.setBackground(cyan);
+				lbl_Generate_Simple.setBounds(250, -3, 77, 26);
+
+				new Label(quickSetupShell, SWT.NONE);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Margin composite+label for better separate with the next section
+				Composite cmp_Space2 = new Composite(quickSetupShell, SWT.NONE);
+				GridData gd_Cmp_Space2 = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+				gd_Cmp_Space2.heightHint = 22;
+				cmp_Space2.setLayoutData(gd_Cmp_Space2);
+				cmp_Space2.setBackground(cyan);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Maze Search Algorithm Section
+				Label lbl_Img_Searcher = new Label(quickSetupShell, SWT.NONE);
+				GridData gd_Lbl_Img_Searcher = new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 2);
+				gd_Lbl_Img_Searcher.heightHint = 70;
+				lbl_Img_Searcher.setLayoutData(gd_Lbl_Img_Searcher);
+				lbl_Img_Searcher.setImage(new Image(null, "resources/searcher.png"));
+				lbl_Img_Searcher.setBackground(cyan);
+
+				Label lbl_Search = new Label(quickSetupShell, SWT.READ_ONLY | SWT.BOTTOM);
+				lbl_Search.setForeground(white);
+				lbl_Search.setBackground(cyan);
+				GridData gd_Lbl_Search = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
+				gd_Lbl_Search.heightHint = 48;
+				lbl_Search.setLayoutData(gd_Lbl_Search);
+				lbl_Search.setFont(new Font(null, "Segoe UI Semibold", 18, SWT.NORMAL));
+				lbl_Search.setText(" Maze Search Algorithm");
+				lbl_Search.setAlignment(SWT.CENTER);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Searcher Section - Composite with buttons for DFS and BFS
+				Composite cmp_Search = new Composite(quickSetupShell, SWT.NONE);
+				GridData gd_Cmp_Search = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+				gd_Cmp_Search.heightHint = 32;
+				cmp_Search.setLayoutData(gd_Cmp_Search);
+				cmp_Search.setBackground(cyan);
+
+				Button btn_Search_DFS = new Button(cmp_Search, SWT.RADIO);
+				btn_Search_DFS.setSelection(true);
+				btn_Search_DFS.setBackground(cyan);
+				btn_Search_DFS.setBounds(10, 0, 16, 20);
+
+				Button btn_Search_BFS = new Button(cmp_Search, SWT.RADIO);
+				btn_Search_BFS.setBackground(cyan);
+				btn_Search_BFS.setBounds(170, 0, 16, 20);
+
+				Label lbl_Search_DFS = new Label(cmp_Search, SWT.NONE);
+				lbl_Search_DFS.setText("DFS");
+				lbl_Search_DFS.setForeground(white);
+				lbl_Search_DFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
+				lbl_Search_DFS.setBackground(cyan);
+				lbl_Search_DFS.setBounds(32, -3, 55, 23);
+
+				Label lbl_Search_BFS = new Label(cmp_Search, SWT.NONE);
+				lbl_Search_BFS.setText("BFS");
+				lbl_Search_BFS.setForeground(white);
+				lbl_Search_BFS.setFont(new Font(null, "Segoe UI", 11, SWT.NORMAL));
+				lbl_Search_BFS.setBackground(cyan);
+				lbl_Search_BFS.setBounds(195, -3, 77, 26);
+				new Label(quickSetupShell, SWT.NONE);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Margin composite+label for better separate with the next section
+				Composite cmp_Space3 = new Composite(quickSetupShell, SWT.NONE);
+				GridData gd_Cmp_Space3 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+				gd_Cmp_Space3.heightHint = 24;
+				cmp_Space3.setLayoutData(gd_Cmp_Space3);
+				cmp_Space3.setBackground(cyan);
+				new Label(quickSetupShell, SWT.NONE);
+
+				//Save and apply button
+				Button startButton = new Button(quickSetupShell, SWT.NONE);
+				startButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
+				startButton.setText("Save and Apply");
+
+				startButton.addSelectionListener(new SelectionListener() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						XMLEncoder encoder = null;
+						try {
+							encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Properites.xml")));
+						} catch (FileNotFoundException e1) {
+							display("Error", "File not found");
+						}
+						prop.setUi("GUI");
+						//Send the chosen generate algorithm to prop
+						if (btn_Generate_DFS.getSelection())
+							prop.setGenerateAlgorithm("MyMaze3dGenerator");
+						else if (btn_Generate_Prim.getSelection())
+							prop.setGenerateAlgorithm("Prim");
+						else if (btn_Generate_Simple.getSelection())
+							prop.setGenerateAlgorithm("SimpleMaze3dGenerator");
+
+						//Send the chosen search algorithm to prop
+						if (btn_Search_DFS.getSelection())
+							prop.setSearchAlgorithm("DFS");
+						else
+							prop.setSearchAlgorithm("BFS");
+
+						//Encode prop to XML and close procedure
+
+						encoder.writeObject(prop);
+						encoder.flush();
+						display("Saved successfully", "prop set and saved successfully.");
+						encoder.close();
+						quickSetupShell.close();
+						shell.setEnabled(true);
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {}
+				});
+				quickSetupShell.pack();
+				quickSetupShell.open();
+			}
+
+			private void aboutGame(){
+				display("About", "Project Maze3D\n\nCoded and Designed by: Yotam Levy and Tomer Brami.\n\nThis project is part of Algorithmic Programming in Java course,\nThe College of Management, Israel\n\nJune 2016");
+			}
 
 
-}
+		}
